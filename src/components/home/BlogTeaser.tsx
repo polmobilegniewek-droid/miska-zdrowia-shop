@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import blogCatImage from "@/assets/blog-cat-eating.jpg";
+import blogCatImage from "@/assets/blog-cat-petting.jpg";
 import blogDogImage from "@/assets/blog-dog-label.jpg";
 import blogIngredientsImage from "@/assets/blog-ingredients.jpg";
 
