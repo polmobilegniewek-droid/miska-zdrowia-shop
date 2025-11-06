@@ -2,9 +2,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, ShoppingCart, Heart } from "lucide-react";
+import { Star, ShoppingCart, Heart, Shield, Package, Leaf } from "lucide-react";
 import { useState } from "react";
-import productDogFood from "@/assets/product-dog-food.jpg";
+import placeholderImage from "/placeholder.svg";
 
 const Product = () => {
   const [selectedWeight, setSelectedWeight] = useState("2kg");
@@ -28,7 +28,7 @@ const Product = () => {
             {/* Image Gallery */}
             <div className="space-y-4">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-large bg-secondary/20">
-                <img src={productDogFood} alt="Grain-Free Dog Food Adult" className="w-full h-full object-cover" />
+                <img src={placeholderImage} alt="Grain-Free Dog Food Adult" className="w-full h-full object-cover" />
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[1, 2, 3, 4].map((i) => (
@@ -37,7 +37,7 @@ const Product = () => {
                     className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors"
                   >
                     <img
-                      src={productDogFood}
+                      src={placeholderImage}
                       alt={`Zdjęcie produktu ${i}`}
                       className="w-full h-full object-cover"
                     />
@@ -124,6 +124,22 @@ const Product = () => {
                   <Button variant="outline" size="lg">
                     <Heart className="w-5 h-5" />
                   </Button>
+                </div>
+                
+                {/* Mini Trust Bar */}
+                <div className="mt-6 pt-6 border-t space-y-3">
+                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                    <Shield className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span>Bezpieczne płatności Przelewy24</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                    <Package className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span>Wysyłka w 24h</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                    <Leaf className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span>Tylko sprawdzone składy</span>
+                  </div>
                 </div>
               </div>
             </div>

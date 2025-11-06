@@ -6,7 +6,7 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background to-secondary/20">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[600px] py-12 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[600px] py-20">
           {/* Content */}
           <div className="space-y-6 text-center lg:text-left">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading text-foreground leading-tight">

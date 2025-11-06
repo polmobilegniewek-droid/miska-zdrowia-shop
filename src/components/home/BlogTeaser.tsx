@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import blogCatImage from "@/assets/blog-cat-eating.jpg";
+import blogDogImage from "@/assets/blog-dog-label.jpg";
+import blogIngredientsImage from "@/assets/blog-ingredients.jpg";
 
 const BlogTeaser = () => {
   const posts = [
@@ -12,6 +15,7 @@ const BlogTeaser = () => {
         "Problemy z nerkami to częste schorzenie u kotów. Dowiedz się, jakie składniki powinny znaleźć się w diecie...",
       date: "15 stycznia 2025",
       category: "Zdrowie",
+      image: blogCatImage,
     },
     {
       id: 2,
@@ -20,6 +24,7 @@ const BlogTeaser = () => {
         "Nie wszystkie karmy są równie dobre. Poznaj składniki, których powinniśmy unikać w żywieniu naszych pupili...",
       date: "10 stycznia 2025",
       category: "Poradniki",
+      image: blogDogImage,
     },
     {
       id: 3,
@@ -28,11 +33,12 @@ const BlogTeaser = () => {
         "Warzywa mogą być zdrowym dodatkiem do diety psa, ale nie wszystkie są bezpieczne. Sprawdź, które wybierać...",
       date: "5 stycznia 2025",
       category: "Żywienie",
+      image: blogIngredientsImage,
     },
   ];
 
   return (
-    <section className="py-16">
+    <section className="py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground">Poradnik MiskaZdrowia</h2>
@@ -45,7 +51,9 @@ const BlogTeaser = () => {
           {posts.map((post) => (
             <Card key={post.id} className="group hover:shadow-medium transition-all overflow-hidden">
               <Link to={`/blog/${post.id}`}>
-                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/40"></div>
+                <div className="h-48 overflow-hidden">
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
                 <CardContent className="p-6 space-y-3">
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span className="bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">

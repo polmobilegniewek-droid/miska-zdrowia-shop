@@ -12,6 +12,9 @@ const Footer = () => {
             <p className="text-sm text-muted-foreground">
               Zdrowie i radość w każdej misce. Starannie wyselekcjonowane karmy dla Twojego pupila.
             </p>
+            <p className="text-xs text-muted-foreground">
+              Prowadzone z pasji przez prawdziwych opiekunów zwierząt.
+            </p>
             <div className="flex space-x-3">
               <a
                 href="https://facebook.com"

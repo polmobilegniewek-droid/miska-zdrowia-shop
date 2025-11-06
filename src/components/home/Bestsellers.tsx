@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import productCatFood from "@/assets/product-cat-food.jpg";
-import productDogFood from "@/assets/product-dog-food.jpg";
+import placeholderImage from "/placeholder.svg";
 
 const Bestsellers = () => {
   const products = [
@@ -15,7 +14,7 @@ const Bestsellers = () => {
       oldPrice: 99.99,
       rating: 4.8,
       reviews: 124,
-      image: productCatFood,
+      image: placeholderImage,
       badge: "Bestseller",
     },
     {
@@ -26,7 +25,7 @@ const Bestsellers = () => {
       oldPrice: null,
       rating: 4.9,
       reviews: 89,
-      image: productDogFood,
+      image: placeholderImage,
       badge: "Nowość",
     },
     {
@@ -37,7 +36,7 @@ const Bestsellers = () => {
       oldPrice: 119.99,
       rating: 4.7,
       reviews: 56,
-      image: productCatFood,
+      image: placeholderImage,
       badge: null,
     },
     {
@@ -48,13 +47,13 @@ const Bestsellers = () => {
       oldPrice: null,
       rating: 4.9,
       reviews: 201,
-      image: productDogFood,
+      image: placeholderImage,
       badge: "Bestseller",
     },
   ];
 
   return (
-    <section className="py-16">
+    <section className="py-20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center space-y-4 mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground">Nasze Bestsellery</h2>
