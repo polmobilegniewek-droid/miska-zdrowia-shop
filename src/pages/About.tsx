@@ -13,6 +13,15 @@ const About = () => {
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <h1 className="text-4xl md:text-5xl font-bold font-heading text-foreground">Witaj w Misce Zdrowia!</h1>
               <p className="text-xl text-muted-foreground">Cieszymy się, że tu jesteś.</p>
+              
+              {/* Image */}
+              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-large mt-8">
+                <img
+                  src={aboutCatsImage}
+                  alt="Trzy koty, które rozpoczęły naszą przygodę"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -21,14 +30,6 @@ const About = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-4xl mx-auto space-y-8">
-              {/* Image */}
-              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-large">
-                <img
-                  src={aboutCatsImage}
-                  alt="Trzy koty, które rozpoczęły naszą przygodę"
-                  className="w-full h-full object-cover"
-                />
-              </div>
 
               {/* Content */}
               <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
