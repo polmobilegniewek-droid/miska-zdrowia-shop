@@ -27,7 +27,7 @@ const About = () => {
         </section>
 
         {/* Story */}
-        <section className="pt-8 pb-16">
+        <section className="pt-2 pb-16">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-4xl mx-auto space-y-8">
 
