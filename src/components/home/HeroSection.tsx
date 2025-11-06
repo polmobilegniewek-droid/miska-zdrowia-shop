@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/hero-dog.jpg";
+import heroImage from "@/assets/hero-cat.jpg";
 
 const HeroSection = () => {
   return (
@@ -30,7 +30,7 @@ const HeroSection = () => {
           <div className="relative lg:h-[500px] h-[400px] rounded-2xl overflow-hidden shadow-large">
             <img
               src={heroImage}
-              alt="Szczęśliwy i zdrowy pies w domowym otoczeniu"
+              alt="Szczęśliwy i zdrowy kotek z miską w domowym otoczeniu"
               className="w-full h-full object-cover"
             />
           </div>
