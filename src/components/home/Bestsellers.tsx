@@ -1,10 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import placeholderImage from "/placeholder.svg";
 
 const Bestsellers = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading for 1 second
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const products = [
     {
       id: 1,
@@ -63,7 +76,25 @@ const Bestsellers = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {loading ? (
+            // Loading Skeletons
+            Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Skeleton className="aspect-square w-full" />
+                <CardContent className="p-4 space-y-2">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-6 w-28" />
+                </CardContent>
+                <CardFooter className="p-4 pt-0">
+                  <Skeleton className="h-10 w-full" />
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            products.map((product) => (
             <Card key={product.id} className="group overflow-hidden hover:shadow-medium transition-all">
               <Link to={`/produkt/${product.id}`}>
                 <div className="relative aspect-square overflow-hidden bg-secondary/20">
@@ -102,7 +133,8 @@ const Bestsellers = () => {
                 </Button>
               </CardFooter>
             </Card>
-          ))}
+          ))
+          )}
         </div>
 
         <div className="text-center mt-12">

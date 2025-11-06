@@ -1,8 +1,11 @@
-import { ShoppingCart, User, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, User, Search, Menu, X, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import placeholderImage from "/placeholder.svg";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -29,6 +32,29 @@ import {
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // Mock cart items
+  const [cartItems] = useState([
+    {
+      id: 1,
+      name: "Grain-Free Dog Food Adult",
+      brand: "HealthyPet",
+      price: 129.99,
+      quantity: 2,
+      image: placeholderImage,
+    },
+    {
+      id: 2,
+      name: "Premium Cat Food Natural",
+      brand: "PetNature",
+      price: 89.99,
+      quantity: 1,
+      image: placeholderImage,
+    },
+  ]);
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const dogCategories = {
     type: [
@@ -223,12 +249,65 @@ const Header = () => {
           <Button variant="ghost" size="icon" aria-label="Konto">
             <User className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Koszyk" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-accent text-accent-foreground text-xs flex items-center justify-center">
-              0
-            </span>
-          </Button>
+          
+          {/* Cart Sheet */}
+          <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Koszyk" className="relative">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-accent text-accent-foreground text-xs flex items-center justify-center">
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-full sm:max-w-lg flex flex-col">
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-heading">Twój koszyk</SheetTitle>
+              </SheetHeader>
+              
+              <div className="flex-1 overflow-y-auto py-6">
+                <div className="space-y-4">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex gap-4">
+                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-secondary/20 flex-shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.brand}</p>
+                        <h4 className="font-semibold text-foreground text-sm line-clamp-2">{item.name}</h4>
+                        <p className="text-sm font-bold text-foreground mt-1">{item.price.toFixed(2)} zł</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Button variant="outline" size="icon" className="h-7 w-7">
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                          <Button variant="outline" size="icon" className="h-7 w-7">
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4 border-t pt-6">
+                <div className="flex items-center justify-between text-lg font-semibold">
+                  <span className="text-foreground">Suma całkowita:</span>
+                  <span className="text-foreground">{cartTotal.toFixed(2)} zł</span>
+                </div>
+                <Button variant="cta" size="lg" className="w-full" onClick={() => setCartOpen(false)}>
+                  Przejdź do kasy
+                </Button>
+                <Button variant="outline" size="lg" className="w-full" onClick={() => setCartOpen(false)}>
+                  Kontynuuj zakupy
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
           <Button
             variant="ghost"
             size="icon"

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, ShoppingCart, Heart, Shield, Package, Leaf } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import placeholderImage from "/placeholder.svg";
 
 const Product = () => {
@@ -117,7 +118,14 @@ const Product = () => {
 
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button variant="cta" size="lg" className="flex-1">
+                  <Button 
+                    variant="cta" 
+                    size="lg" 
+                    className="flex-1"
+                    onClick={() => toast.success("Produkt dodano do koszyka", {
+                      description: "Możesz kontynuować zakupy lub przejść do koszyka"
+                    })}
+                  >
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Dodaj do koszyka
                   </Button>
