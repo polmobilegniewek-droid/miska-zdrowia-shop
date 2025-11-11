@@ -7,59 +7,47 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import placeholderImage from "/placeholder.svg";
+
+interface Product {
+  sku: string;
+  nazwa: string;
+  opis: string | null;
+  cena_netto: string;
+  stan_magazynowy: string;
+  url_zdjecia: string | null;
+}
 
 const CategoryPage = () => {
   const { nazwa } = useParams();
   const [priceRange, setPriceRange] = useState([0, 500]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const products = [
-    {
-      id: 1,
-      name: "Premium Cat Food Natural",
-      brand: "PetNature",
-      price: 89.99,
-      oldPrice: 99.99,
-      rating: 4.8,
-      reviews: 124,
-      image: placeholderImage,
-      badge: "Bestseller",
-    },
-    {
-      id: 2,
-      name: "Grain-Free Dog Food Adult",
-      brand: "HealthyPet",
-      price: 129.99,
-      oldPrice: null,
-      rating: 4.9,
-      reviews: 89,
-      image: placeholderImage,
-      badge: "Nowość",
-    },
-    {
-      id: 3,
-      name: "Senior Cat Food Kidney Care",
-      brand: "VetDiet",
-      price: 99.99,
-      oldPrice: 119.99,
-      rating: 4.7,
-      reviews: 56,
-      image: placeholderImage,
-      badge: null,
-    },
-    {
-      id: 4,
-      name: "Puppy Food Chicken & Rice",
-      brand: "HealthyPet",
-      price: 109.99,
-      oldPrice: null,
-      rating: 4.9,
-      reviews: 201,
-      image: placeholderImage,
-      badge: "Bestseller",
-    },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch('http://serwer2583155.home.pl/getProdukty.php');
+        
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać produktów');
+        }
+        
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -154,48 +142,52 @@ const CategoryPage = () => {
 
             {/* Products Grid */}
             <div className="lg:col-span-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <Card key={product.id} className="group overflow-hidden hover:shadow-medium transition-all">
-                    <Link to={`/produkt/${product.id}`}>
-                      <div className="relative aspect-square overflow-hidden bg-secondary/20">
-                        {product.badge && (
-                          <span className="absolute top-3 left-3 z-10 bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                            {product.badge}
-                          </span>
-                        )}
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <CardContent className="p-4 space-y-2">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.brand}</p>
-                        <h3 className="font-semibold font-heading text-foreground line-clamp-2 min-h-[2.5rem]">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 fill-accent text-accent" />
-                          <span className="text-sm font-medium">{product.rating}</span>
-                          <span className="text-sm text-muted-foreground">({product.reviews})</span>
+              {isLoading && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-muted-foreground">Ładowanie produktów...</p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-destructive">{error}</p>
+                </div>
+              )}
+              
+              {!isLoading && !error && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.map((product) => (
+                    <Card key={product.sku} className="group overflow-hidden hover:shadow-medium transition-all">
+                      <Link to={`/produkt/${product.sku}`}>
+                        <div className="relative aspect-square overflow-hidden bg-secondary/20">
+                          <img
+                            src={product.url_zdjecia || placeholderImage}
+                            alt={product.nazwa}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xl font-bold text-foreground">{product.price.toFixed(2)} zł</span>
-                          {product.oldPrice && (
-                            <span className="text-sm text-muted-foreground line-through">{product.oldPrice.toFixed(2)} zł</span>
+                        <CardContent className="p-4 space-y-2">
+                          <h2 className="font-semibold font-heading text-foreground line-clamp-2 min-h-[2.5rem]">
+                            {product.nazwa}
+                          </h2>
+                          {product.opis && (
+                            <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
                           )}
-                        </div>
-                      </CardContent>
-                    </Link>
-                    <CardFooter className="p-4 pt-0">
-                      <Button variant="cta" className="w-full">
-                        Dodaj do koszyka
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">Na stanie: {product.stan_magazynowy} szt.</p>
+                        </CardContent>
+                      </Link>
+                      <CardFooter className="p-4 pt-0">
+                        <Button variant="cta" className="w-full">
+                          Dodaj do koszyka
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
