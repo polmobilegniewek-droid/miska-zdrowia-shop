@@ -176,7 +176,10 @@ const CategoryPage = () => {
                             {product.nazwa}
                           </h2>
                           {product.opis && (
-                            <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
+                            <p 
+                              className="text-sm text-muted-foreground line-clamp-2"
+                              dangerouslySetInnerHTML={{ __html: product.opis }} 
+                            />
                           )}
                           <div className="flex items-center space-x-2">
                             <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
