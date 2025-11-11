@@ -18,10 +18,10 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button asChild size="lg" variant="cta">
-                <Link to="/dla-psa">Karma dla Psa</Link>
+                <Link to="/kategoria/dla-psa">Karma dla Psa</Link>
               </Button>
               <Button asChild size="lg" variant="default">
-                <Link to="/dla-kota">Karma dla Kota</Link>
+                <Link to="/kategoria/dla-kota">Karma dla Kota</Link>
               </Button>
             </div>
           </div>

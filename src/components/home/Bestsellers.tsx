@@ -1,69 +1,47 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
 import placeholderImage from "/placeholder.svg";
+
+interface Product {
+  sku: string;
+  nazwa: string;
+  opis: string | null;
+  cena_netto: string;
+  stan_magazynowy: string;
+  url_zdjecia: string | null;
+}
 
 const Bestsellers = () => {
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    // Simulate loading for 1 second
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://serwer2583155.home.pl/getProdukty.php');
+        
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać produktów');
+        }
+        
+        const data = await response.json();
+        // Weź pierwsze 4 produkty jako bestsellery
+        setProducts(data.slice(0, 4));
+      } catch (err) {
+        console.error('Błąd podczas ładowania produktów:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchProducts();
   }, []);
-
-  const products = [
-    {
-      id: 1,
-      name: "Premium Cat Food Natural",
-      brand: "PetNature",
-      price: 89.99,
-      oldPrice: 99.99,
-      rating: 4.8,
-      reviews: 124,
-      image: placeholderImage,
-      badge: "Bestseller",
-    },
-    {
-      id: 2,
-      name: "Grain-Free Dog Food Adult",
-      brand: "HealthyPet",
-      price: 129.99,
-      oldPrice: null,
-      rating: 4.9,
-      reviews: 89,
-      image: placeholderImage,
-      badge: "Nowość",
-    },
-    {
-      id: 3,
-      name: "Senior Cat Food Kidney Care",
-      brand: "VetDiet",
-      price: 99.99,
-      oldPrice: 119.99,
-      rating: 4.7,
-      reviews: 56,
-      image: placeholderImage,
-      badge: null,
-    },
-    {
-      id: 4,
-      name: "Puppy Food Chicken & Rice",
-      brand: "HealthyPet",
-      price: 109.99,
-      oldPrice: null,
-      rating: 4.9,
-      reviews: 201,
-      image: placeholderImage,
-      badge: "Bestseller",
-    },
-  ];
 
   return (
     <section className="py-20">
@@ -95,40 +73,36 @@ const Bestsellers = () => {
             ))
           ) : (
             products.map((product) => (
-            <Card key={product.id} className="group overflow-hidden hover:shadow-medium transition-all">
-              <Link to={`/produkt/${product.id}`}>
+            <Card key={product.sku} className="group overflow-hidden hover:shadow-medium transition-all">
+              <Link to={`/produkt/${product.sku}`}>
                 <div className="relative aspect-square overflow-hidden bg-secondary/20">
-                  {product.badge && (
-                    <span className="absolute top-3 left-3 z-10 bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                      {product.badge}
-                    </span>
-                  )}
                   <img
-                    src={product.image}
-                    alt={product.name}
+                    src={product.url_zdjecia || placeholderImage}
+                    alt={product.nazwa}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <CardContent className="p-4 space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.brand}</p>
                   <h3 className="font-semibold font-heading text-foreground line-clamp-2 min-h-[2.5rem]">
-                    {product.name}
+                    {product.nazwa}
                   </h3>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-accent text-accent" />
-                    <span className="text-sm font-medium">{product.rating}</span>
-                    <span className="text-sm text-muted-foreground">({product.reviews})</span>
-                  </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xl font-bold text-foreground">{product.price.toFixed(2)} zł</span>
-                    {product.oldPrice && (
-                      <span className="text-sm text-muted-foreground line-through">{product.oldPrice.toFixed(2)} zł</span>
-                    )}
+                    <span className="text-xl font-bold text-foreground">{parseFloat(product.cena_netto).toFixed(2)} zł</span>
                   </div>
                 </CardContent>
               </Link>
               <CardFooter className="p-4 pt-0">
-                <Button variant="cta" className="w-full">
+                <Button 
+                  variant="cta" 
+                  className="w-full"
+                  onClick={() => addToCart({
+                    id: product.sku,
+                    sku: product.sku,
+                    name: product.nazwa,
+                    price: parseFloat(product.cena_netto),
+                    image: product.url_zdjecia || placeholderImage,
+                  })}
+                >
                   Dodaj do koszyka
                 </Button>
               </CardFooter>
@@ -139,7 +113,7 @@ const Bestsellers = () => {
 
         <div className="text-center mt-12">
           <Button asChild size="lg" variant="outline">
-            <Link to="/produkty">Zobacz wszystkie produkty</Link>
+            <Link to="/kategoria/dla-psa">Zobacz wszystkie produkty</Link>
           </Button>
         </div>
       </div>
