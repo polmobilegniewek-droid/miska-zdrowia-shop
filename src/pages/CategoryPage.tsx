@@ -31,7 +31,9 @@ const CategoryPage = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('http://serwer2583155.home.pl/getProdukty.php');
+        
+        // Dodajemy parametr `kategoria` do URL
+        const response = await fetch(`http://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
         if (!response.ok) {
           throw new Error('Nie udało się pobrać produktów');
@@ -47,7 +49,8 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
-  }, []);
+    // Dodajemy kategoria do tablicy zależności
+  }, [kategoria]);
 
   return (
     <div className="min-h-screen flex flex-col">

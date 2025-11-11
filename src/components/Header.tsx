@@ -58,33 +58,33 @@ const Header = () => {
 
   const dogCategories = {
     type: [
-      { label: "Sucha", href: "/dla-psa/sucha" },
-      { label: "Mokra", href: "/dla-psa/mokra" },
-      { label: "Weterynaryjna", href: "/dla-psa/weterynaryjna" },
-      { label: "Przysmaki", href: "/dla-psa/przysmaki" },
+      { label: "Sucha", href: "/kategoria/dla-psa/sucha" },
+      { label: "Mokra", href: "/kategoria/dla-psa/mokra" },
+      { label: "Weterynaryjna", href: "/kategoria/dla-psa/weterynaryjna" },
+      { label: "Przysmaki", href: "/kategoria/dla-psa/przysmaki" },
     ],
     needs: [
-      { label: "Szczeniak", href: "/dla-psa/szczeniak" },
-      { label: "Dorosły", href: "/dla-psa/dorosly" },
-      { label: "Senior", href: "/dla-psa/senior" },
-      { label: "Hipoalergiczna", href: "/dla-psa/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/dla-psa/bezbozowa" },
+      { label: "Szczeniak", href: "/kategoria/dla-psa/szczeniak" },
+      { label: "Dorosły", href: "/kategoria/dla-psa/dorosly" },
+      { label: "Senior", href: "/kategoria/dla-psa/senior" },
+      { label: "Hipoalergiczna", href: "/kategoria/dla-psa/hipoalergiczna" },
+      { label: "Bezzbożowa", href: "/kategoria/dla-psa/bezbozowa" },
     ],
   };
 
   const catCategories = {
     type: [
-      { label: "Sucha", href: "/dla-kota/sucha" },
-      { label: "Mokra", href: "/dla-kota/mokra" },
-      { label: "Weterynaryjna", href: "/dla-kota/weterynaryjna" },
-      { label: "Przysmaki", href: "/dla-kota/przysmaki" },
+      { label: "Sucha", href: "/kategoria/dla-kota/sucha" },
+      { label: "Mokra", href: "/kategoria/dla-kota/mokra" },
+      { label: "Weterynaryjna", href: "/kategoria/dla-kota/weterynaryjna" },
+      { label: "Przysmaki", href: "/kategoria/dla-kota/przysmaki" },
     ],
     needs: [
-      { label: "Kocię", href: "/dla-kota/kocie" },
-      { label: "Dorosły", href: "/dla-kota/dorosly" },
-      { label: "Senior", href: "/dla-kota/senior" },
-      { label: "Hipoalergiczna", href: "/dla-kota/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/dla-kota/bezbozowa" },
+      { label: "Kocię", href: "/kategoria/dla-kota/kocie" },
+      { label: "Dorosły", href: "/kategoria/dla-kota/dorosly" },
+      { label: "Senior", href: "/kategoria/dla-kota/senior" },
+      { label: "Hipoalergiczna", href: "/kategoria/dla-kota/hipoalergiczna" },
+      { label: "Bezzbożowa", href: "/kategoria/dla-kota/bezbozowa" },
     ],
   };
 
