@@ -36,7 +36,7 @@ const Product = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch(`http://serwer2583155.home.pl/getProductDetails.php?sku=${sku}`);
+        const response = await fetch(`https://serwer2583155.home.pl/getProductDetails.php?sku=${sku}`);
         
         if (!response.ok) {
           throw new Error("Nie udało się pobrać danych produktu");

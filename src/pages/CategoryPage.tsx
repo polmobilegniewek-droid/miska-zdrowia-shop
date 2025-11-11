@@ -33,7 +33,7 @@ const CategoryPage = () => {
         setError(null);
         
         // Dodajemy parametr `kategoria` do URL
-        const response = await fetch(`http://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
+        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
         if (!response.ok) {
           throw new Error('Nie udało się pobrać produktów');
