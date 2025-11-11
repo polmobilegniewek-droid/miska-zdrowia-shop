@@ -20,7 +20,7 @@ interface Product {
 }
 
 const CategoryPage = () => {
-  const { nazwa } = useParams();
+  const { '*': kategoria } = useParams();
   const [priceRange, setPriceRange] = useState([0, 500]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +57,7 @@ const CategoryPage = () => {
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-2">
-              {nazwa ? nazwa.replace(/-/g, ' ') : 'Produkty'}
+              {kategoria ? kategoria.replace(/-/g, ' ') : 'Produkty'}
             </h1>
             <p className="text-muted-foreground">Znaleziono {products.length} produktów</p>
           </div>
