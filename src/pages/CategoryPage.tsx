@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
 import placeholderImage from "/placeholder.svg";
 
 interface Product {
@@ -25,6 +26,7 @@ const CategoryPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -183,7 +185,17 @@ const CategoryPage = () => {
                         </CardContent>
                       </Link>
                       <CardFooter className="p-4 pt-0">
-                        <Button variant="cta" className="w-full">
+                        <Button 
+                          variant="cta" 
+                          className="w-full"
+                          onClick={() => addToCart({
+                            id: product.sku,
+                            sku: product.sku,
+                            name: product.nazwa,
+                            price: parseFloat(product.cena_netto),
+                            image: product.url_zdjecia || placeholderImage,
+                          })}
+                        >
                           Dodaj do koszyka
                         </Button>
                       </CardFooter>

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/contexts/CartContext";
 import placeholderImage from "/placeholder.svg";
 import {
   NavigationMenu,
@@ -33,28 +34,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-
-  // Mock cart items
-  const [cartItems] = useState([
-    {
-      id: 1,
-      name: "Grain-Free Dog Food Adult",
-      brand: "HealthyPet",
-      price: 129.99,
-      quantity: 2,
-      image: placeholderImage,
-    },
-    {
-      id: 2,
-      name: "Premium Cat Food Natural",
-      brand: "PetNature",
-      price: 89.99,
-      quantity: 1,
-      image: placeholderImage,
-    },
-  ]);
-
-  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
 
   const dogCategories = {
     type: [
@@ -256,7 +236,7 @@ const Header = () => {
               <Button variant="ghost" size="icon" aria-label="Koszyk" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-accent text-accent-foreground text-xs flex items-center justify-center">
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                  {cartCount}
                 </span>
               </Button>
             </SheetTrigger>
@@ -273,20 +253,35 @@ const Header = () => {
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.brand}</p>
+                        {item.brand && <p className="text-xs text-muted-foreground uppercase tracking-wide">{item.brand}</p>}
                         <h4 className="font-semibold text-foreground text-sm line-clamp-2">{item.name}</h4>
                         <p className="text-sm font-bold text-foreground mt-1">{item.price.toFixed(2)} zł</p>
                         <div className="flex items-center gap-2 mt-2">
-                          <Button variant="outline" size="icon" className="h-7 w-7">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          >
                             <Minus className="h-3 w-3" />
                           </Button>
                           <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
-                          <Button variant="outline" size="icon" className="h-7 w-7">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          >
                             <Plus className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground"
+                        onClick={() => removeFromCart(item.id)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, ShoppingCart, Heart, Shield, Package, Leaf } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "sonner";
+import { useCart } from "@/contexts/CartContext";
 import placeholderImage from "/placeholder.svg";
 
 interface Product {
@@ -24,6 +24,7 @@ const Product = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedWeight, setSelectedWeight] = useState("2kg");
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -208,8 +209,14 @@ const Product = () => {
                     variant="cta" 
                     size="lg" 
                     className="flex-1"
-                    onClick={() => toast.success("Produkt dodano do koszyka", {
-                      description: "Możesz kontynuować zakupy lub przejść do koszyka"
+                    onClick={() => addToCart({
+                      id: `${product.sku}-${selectedWeight}`,
+                      sku: product.sku,
+                      name: product.nazwa,
+                      price: parseFloat(product.cena_netto),
+                      image: product.url_zdjecia || placeholderImage,
+                      weight: selectedWeight,
+                      quantity: quantity,
                     })}
                   >
                     <ShoppingCart className="w-5 h-5 mr-2" />
