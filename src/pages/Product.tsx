@@ -3,13 +3,56 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, ShoppingCart, Heart, Shield, Package, Leaf } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import placeholderImage from "/placeholder.svg";
 
+interface Product {
+  sku: string;
+  nazwa: string;
+  opis: string | null;
+  cena_netto: string;
+  stan_magazynowy: string;
+  url_zdjecia: string | null;
+}
+
 const Product = () => {
+  const { id: sku } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedWeight, setSelectedWeight] = useState("2kg");
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!sku) {
+        setError("Brak SKU produktu");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch(`http://serwer2583155.home.pl/getProductDetails.php?sku=${sku}`);
+        
+        if (!response.ok) {
+          throw new Error("Nie udało się pobrać danych produktu");
+        }
+
+        const data = await response.json();
+        setProduct(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Wystąpił błąd podczas pobierania produktu");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [sku]);
 
   const weights = [
     { value: "2kg", price: 129.99 },
@@ -18,6 +61,54 @@ const Product = () => {
   ];
 
   const currentPrice = weights.find((w) => w.value === selectedWeight)?.price || 129.99;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 py-12">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center py-20">
+              <p className="text-xl text-muted-foreground">Ładowanie produktu...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 py-12">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center py-20">
+              <p className="text-xl text-red-500">Błąd: {error}</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 py-12">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center py-20">
+              <p className="text-xl text-muted-foreground">Produkt nie został znaleziony</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -29,30 +120,20 @@ const Product = () => {
             {/* Image Gallery */}
             <div className="space-y-4">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-large bg-secondary/20">
-                <img src={placeholderImage} alt="Grain-Free Dog Food Adult" className="w-full h-full object-cover" />
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <button
-                    key={i}
-                    className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors"
-                  >
-                    <img
-                      src={placeholderImage}
-                      alt={`Zdjęcie produktu ${i}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+                <img 
+                  src={product.url_zdjecia || placeholderImage} 
+                  alt={product.nazwa} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
             </div>
 
             {/* Product Info */}
             <div className="space-y-6">
               <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">HealthyPet</p>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">SKU: {product.sku}</p>
                 <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-3">
-                  Grain-Free Dog Food Adult
+                  {product.nazwa}
                 </h1>
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="flex items-center">
@@ -63,17 +144,22 @@ const Product = () => {
                   <span className="text-sm font-medium">4.9</span>
                   <span className="text-sm text-muted-foreground">(89 opinii)</span>
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  Bezzbożowa karma dla dorosłych psów wszystkich ras. Wysokiej jakości mięso kurczaka z warzywami i
-                  owocami dla optymalnego zdrowia Twojego pupila.
-                </p>
+                {product.opis && (
+                  <div 
+                    className="text-lg text-muted-foreground prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: product.opis }}
+                  />
+                )}
               </div>
 
               {/* Price */}
               <div className="bg-secondary/30 p-6 rounded-xl">
                 <div className="flex items-baseline space-x-2 mb-4">
-                  <span className="text-3xl font-bold text-foreground">{currentPrice.toFixed(2)} zł</span>
-                  <span className="text-sm text-muted-foreground">/ {selectedWeight}</span>
+                  <span className="text-3xl font-bold text-foreground">{parseFloat(product.cena_netto).toFixed(2)} zł</span>
+                  <span className="text-sm text-muted-foreground">(netto)</span>
+                </div>
+                <div className="text-sm text-muted-foreground mb-4">
+                  Na stanie: {product.stan_magazynowy} szt.
                 </div>
 
                 {/* Weight Selection */}
@@ -163,23 +249,14 @@ const Product = () => {
               </TabsList>
               <TabsContent value="description" className="mt-8 space-y-4">
                 <h3 className="text-2xl font-bold font-heading text-foreground">Opis produktu</h3>
-                <div className="prose prose-lg max-w-none text-muted-foreground space-y-4">
-                  <p>
-                    Karma bezzbożowa HealthyPet Adult to kompletna i zbilansowana dieta dla dorosłych psów wszystkich
-                    ras. Receptura oparta na wysokiej jakości mięsie kurczaka zapewnia optymalną ilość białka
-                    zwierzęcego.
-                  </p>
-                  <p>
-                    <strong className="text-foreground">Kluczowe korzyści:</strong>
-                  </p>
-                  <ul className="list-disc list-inside space-y-2 pl-4">
-                    <li>Wspiera zdrowy układ trawienny dzięki naturalnym włóknom</li>
-                    <li>Pielęgnuje skórę i sierść - zawiera omega-3 i omega-6</li>
-                    <li>Wzmacnia naturalną odporność</li>
-                    <li>Bez zbóż, sztucznych barwników i konserwantów</li>
-                    <li>Wysoka strawność i smak, który uwielbiają psy</li>
-                  </ul>
-                </div>
+                {product.opis ? (
+                  <div 
+                    className="prose prose-lg max-w-none text-muted-foreground space-y-4"
+                    dangerouslySetInnerHTML={{ __html: product.opis }}
+                  />
+                ) : (
+                  <p className="text-muted-foreground">Brak opisu produktu.</p>
+                )}
               </TabsContent>
               <TabsContent value="composition" className="mt-8 space-y-4">
                 <h3 className="text-2xl font-bold font-heading text-foreground">Skład</h3>
