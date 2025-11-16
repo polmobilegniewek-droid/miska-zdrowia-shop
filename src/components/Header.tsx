@@ -36,50 +36,366 @@ const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
 
-  const dogCategories = {
-    karma: [
-      { label: "Sucha karma", href: "/kategoria/psy/sucha-karma" },
-      { label: "Bezzbożowa", href: "/kategoria/psy/sucha-karma/bezbozowa" },
-      { label: "Karma Light/Senior", href: "/kategoria/psy/sucha-karma/karma-light-senior" },
-      { label: "Mokra karma", href: "/kategoria/psy/mokra-karma" },
-      { label: "Próbki karm", href: "/kategoria/psy/probki-karm" },
-    ],
-    przysmaki: [
-      { label: "Wszystkie przysmaki", href: "/kategoria/psy/przysmaki" },
-      { label: "Ciastka i łakocie", href: "/kategoria/psy/przysmaki/ciastka-i-lakocie" },
-      { label: "Do żucia", href: "/kategoria/psy/przysmaki/do-zucia" },
-      { label: "Kości", href: "/kategoria/psy/przysmaki/kosci" },
-      { label: "Naturalne i gryzaki", href: "/kategoria/psy/przysmaki/naturalne-i-gryzaki" },
-      { label: "Treningowe", href: "/kategoria/psy/przysmaki/treningowe" },
-    ],
-    akcesoria: [
-      { label: "Akcesoria i zdrowie", href: "/kategoria/psy/akcesoria-i-zdrowie" },
-      { label: "Zabawki", href: "/kategoria/psy/akcesoria-i-zdrowie/zabawki" },
-      { label: "Miski", href: "/kategoria/psy/akcesoria-i-zdrowie/miski" },
-      { label: "Smycze i szelki", href: "/kategoria/psy/akcesoria-i-zdrowie/smycze-i-szelki" },
-      { label: "Witaminy i suplementy", href: "/kategoria/psy/akcesoria-i-zdrowie/witaminy-i-suplementy" },
-      { label: "Szampony i ochrona", href: "/kategoria/psy/akcesoria-i-zdrowie/szampony-i-ochrona" },
-    ],
-  };
+  const dogCategories = [
+    {
+      label: "Sucha karma",
+      href: "/kategoria/psy/sucha-karma",
+      subcategories: [
+        {
+          label: "Karma wg. smaku",
+          items: [
+            { label: "Bez kurczaka", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/bez-kurczaka" },
+            { label: "Oparta na kurczaku", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-kurczaku" },
+            { label: "Oparta na króliku", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-kroliku" },
+            { label: "Oparta na indyku", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-indyku" },
+            { label: "Oparta na wołowinie", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-wolowinie" },
+            { label: "Oparta na jagnięcinie", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-jagniecinie" },
+            { label: "Oparta na wieprzowinie", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-wieprzowinie" },
+            { label: "Oparta na rybie", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-rybie" },
+            { label: "Oparta na dziczyźnie", href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-dzicczyznie" },
+          ]
+        },
+        {
+          label: "Karma wg. wieku",
+          items: [
+            { label: "Dla szczeniąt", href: "/kategoria/psy/sucha-karma/karma-wg-wieku/dla-szczeniat" },
+            { label: "Psy dorosłe", href: "/kategoria/psy/sucha-karma/karma-wg-wieku/psy-dorosle" },
+            { label: "Dla seniora", href: "/kategoria/psy/sucha-karma/karma-wg-wieku/dla-seniora" },
+          ]
+        },
+        {
+          label: "Karma wg. wielkości",
+          items: [
+            { label: "Rasy małe", href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-male" },
+            { label: "Rasy średnie", href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-srednie" },
+            { label: "Rasy duże", href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-duze" },
+          ]
+        },
+        {
+          label: "Bezzbożowa",
+          items: [
+            { label: "Bezzbożowa", href: "/kategoria/psy/sucha-karma/bezbozowa" },
+          ]
+        },
+        {
+          label: "Karma Light/Senior",
+          items: [
+            { label: "Karma Light/Senior", href: "/kategoria/psy/sucha-karma/karma-light-senior" },
+          ]
+        },
+      ]
+    },
+    {
+      label: "Mokra karma",
+      href: "/kategoria/psy/mokra-karma",
+      subcategories: [
+        {
+          label: "Puszki 400g",
+          items: [
+            { label: "Puszki 400g", href: "/kategoria/psy/mokra-karma/puszki-400g" },
+          ]
+        },
+        {
+          label: "Puszki 800g+",
+          items: [
+            { label: "Puszki 800g+", href: "/kategoria/psy/mokra-karma/puszki-800g" },
+          ]
+        },
+        {
+          label: "Saszetki",
+          items: [
+            { label: "Saszetki", href: "/kategoria/psy/mokra-karma/saszetki" },
+          ]
+        },
+        {
+          label: "Zestawy",
+          items: [
+            { label: "Zestawy", href: "/kategoria/psy/mokra-karma/zestawy" },
+          ]
+        },
+      ]
+    },
+    {
+      label: "Przysmaki",
+      href: "/kategoria/psy/przysmaki",
+      subcategories: [
+        {
+          label: "Kości",
+          items: [
+            { label: "Kości", href: "/kategoria/psy/przysmaki/kosci" },
+          ]
+        },
+        {
+          label: "Do żucia",
+          items: [
+            { label: "Do żucia", href: "/kategoria/psy/przysmaki/do-zucia" },
+          ]
+        },
+        {
+          label: "Ciastka i łakocie",
+          items: [
+            { label: "Ciastka i łakocie", href: "/kategoria/psy/przysmaki/ciastka-i-lakocie" },
+          ]
+        },
+        {
+          label: "Pozostałe",
+          items: [
+            { label: "Pozostałe", href: "/kategoria/psy/przysmaki/pozostale" },
+          ]
+        },
+        {
+          label: "Treningowe",
+          items: [
+            { label: "Treningowe", href: "/kategoria/psy/przysmaki/treningowe" },
+          ]
+        },
+        {
+          label: "Naturalne i gryzaki",
+          items: [
+            { label: "Naturalne i gryzaki", href: "/kategoria/psy/przysmaki/naturalne-i-gryzaki" },
+          ]
+        },
+        {
+          label: "Półwilgotne",
+          items: [
+            { label: "Półwilgotne", href: "/kategoria/psy/przysmaki/polwilgotne" },
+          ]
+        },
+        {
+          label: "Zestawy",
+          items: [
+            { label: "Zestawy", href: "/kategoria/psy/przysmaki/zestawy" },
+          ]
+        },
+      ]
+    },
+    {
+      label: "Próbki karm",
+      href: "/kategoria/psy/probki-karm",
+      subcategories: []
+    },
+    {
+      label: "Akcesoria i zdrowie",
+      href: "/kategoria/psy/akcesoria-i-zdrowie",
+      subcategories: [
+        {
+          label: "Miski",
+          items: [
+            { label: "Miski", href: "/kategoria/psy/akcesoria-i-zdrowie/miski" },
+          ]
+        },
+        {
+          label: "Legowiska dla psów",
+          items: [
+            { label: "Legowiska dla psów", href: "/kategoria/psy/akcesoria-i-zdrowie/legowiska-dla-psow" },
+          ]
+        },
+        {
+          label: "Zabawki",
+          items: [
+            { label: "Zabawki", href: "/kategoria/psy/akcesoria-i-zdrowie/zabawki" },
+          ]
+        },
+        {
+          label: "Smycze i szelki",
+          items: [
+            { label: "Smycze i szelki", href: "/kategoria/psy/akcesoria-i-zdrowie/smycze-i-szelki" },
+          ]
+        },
+        {
+          label: "Obroże i kagańce",
+          items: [
+            { label: "Obroże i kagańce", href: "/kategoria/psy/akcesoria-i-zdrowie/obroze-i-kaganince" },
+          ]
+        },
+        {
+          label: "Szczotki i grzebienie",
+          items: [
+            { label: "Szczotki i grzebienie", href: "/kategoria/psy/akcesoria-i-zdrowie/szczotki-i-grzebienie" },
+          ]
+        },
+        {
+          label: "Transportery",
+          items: [
+            { label: "Transportery", href: "/kategoria/psy/akcesoria-i-zdrowie/transportery" },
+          ]
+        },
+        {
+          label: "Podkłady higieniczne",
+          items: [
+            { label: "Podkłady higieniczne", href: "/kategoria/psy/akcesoria-i-zdrowie/podklady-higieniczne" },
+          ]
+        },
+        {
+          label: "Ubranka dla psa",
+          items: [
+            { label: "Ubranka dla psa", href: "/kategoria/psy/akcesoria-i-zdrowie/ubranka-dla-psa" },
+          ]
+        },
+        {
+          label: "Gadżety",
+          items: [
+            { label: "Gadżety", href: "/kategoria/psy/akcesoria-i-zdrowie/gadzety" },
+          ]
+        },
+        {
+          label: "Maty chłodzące",
+          items: [
+            { label: "Maty chłodzące", href: "/kategoria/psy/akcesoria-i-zdrowie/maty-chlodzace" },
+          ]
+        },
+        {
+          label: "Witaminy i suplementy",
+          items: [
+            { label: "Witaminy i suplementy", href: "/kategoria/psy/akcesoria-i-zdrowie/witaminy-i-suplementy" },
+          ]
+        },
+        {
+          label: "Szampony i ochrona",
+          items: [
+            { label: "Szampony i ochrona", href: "/kategoria/psy/akcesoria-i-zdrowie/szampony-i-ochrona" },
+          ]
+        },
+      ]
+    },
+  ];
 
-  const catCategories = {
-    karma: [
-      { label: "Sucha karma", href: "/kategoria/koty/sucha-karma" },
-      { label: "Mokra karma dla kota", href: "/kategoria/koty/mokra-karma-dla-kota" },
-      { label: "Puszki", href: "/kategoria/koty/mokra-karma-dla-kota/puszki" },
-      { label: "Próbki karm", href: "/kategoria/koty/probki-karm" },
-      { label: "Przysmaki", href: "/kategoria/koty/przysmaki" },
-    ],
-    akcesoria: [
-      { label: "Akcesoria i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy" },
-      { label: "Drapaki", href: "/kategoria/koty/akcesoria-i-suplementy/drapaki" },
-      { label: "Zabawki", href: "/kategoria/koty/akcesoria-i-suplementy/zabawki" },
-      { label: "Kuwety", href: "/kategoria/koty/akcesoria-i-suplementy/kuwety" },
-      { label: "Żwirki", href: "/kategoria/koty/akcesoria-i-suplementy/zwirki" },
-      { label: "Witaminy i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy/witaminy-i-suplementy" },
-      { label: "Szczotki i grzebienie", href: "/kategoria/koty/akcesoria-i-suplementy/szczotki-i-grzebienie" },
-    ],
-  };
+  const catCategories = [
+    {
+      label: "Sucha karma",
+      href: "/kategoria/koty/sucha-karma",
+      subcategories: []
+    },
+    {
+      label: "Mokra karma dla kota",
+      href: "/kategoria/koty/mokra-karma-dla-kota",
+      subcategories: [
+        {
+          label: "Puszki",
+          items: [
+            { label: "Puszki", href: "/kategoria/koty/mokra-karma-dla-kota/puszki" },
+          ]
+        },
+        {
+          label: "Saszetki",
+          items: [
+            { label: "Saszetki", href: "/kategoria/koty/mokra-karma-dla-kota/saszetki" },
+          ]
+        },
+        {
+          label: "Zestawy",
+          items: [
+            { label: "Zestawy", href: "/kategoria/koty/mokra-karma-dla-kota/zestawy" },
+          ]
+        },
+      ]
+    },
+    {
+      label: "Przysmaki",
+      href: "/kategoria/koty/przysmaki",
+      subcategories: []
+    },
+    {
+      label: "Zestawy",
+      href: "/kategoria/koty/zestawy",
+      subcategories: []
+    },
+    {
+      label: "Próbki karm",
+      href: "/kategoria/koty/probki-karm",
+      subcategories: []
+    },
+    {
+      label: "Akcesoria i suplementy",
+      href: "/kategoria/koty/akcesoria-i-suplementy",
+      subcategories: [
+        {
+          label: "Miski",
+          items: [
+            { label: "Miski", href: "/kategoria/koty/akcesoria-i-suplementy/miski" },
+          ]
+        },
+        {
+          label: "Żwirek dla kota",
+          items: [
+            { label: "Żwirek dla kota", href: "/kategoria/koty/akcesoria-i-suplementy/zwirek-dla-kota" },
+          ]
+        },
+        {
+          label: "Kuwety",
+          items: [
+            { label: "Kuwety", href: "/kategoria/koty/akcesoria-i-suplementy/kuwety" },
+          ]
+        },
+        {
+          label: "Legowiska",
+          items: [
+            { label: "Legowiska", href: "/kategoria/koty/akcesoria-i-suplementy/legowiska" },
+          ]
+        },
+        {
+          label: "Zabawki",
+          items: [
+            { label: "Zabawki", href: "/kategoria/koty/akcesoria-i-suplementy/zabawki" },
+          ]
+        },
+        {
+          label: "Transportery",
+          items: [
+            { label: "Transportery", href: "/kategoria/koty/akcesoria-i-suplementy/transportery" },
+          ]
+        },
+        {
+          label: "Szczotki i grzebienie",
+          items: [
+            { label: "Szczotki i grzebienie", href: "/kategoria/koty/akcesoria-i-suplementy/szczotki-i-grzebienie" },
+          ]
+        },
+        {
+          label: "Smycze i szelki",
+          items: [
+            { label: "Smycze i szelki", href: "/kategoria/koty/akcesoria-i-suplementy/smycze-i-szelki" },
+          ]
+        },
+        {
+          label: "Obroże",
+          items: [
+            { label: "Obroże", href: "/kategoria/koty/akcesoria-i-suplementy/obroze" },
+          ]
+        },
+        {
+          label: "Siatki",
+          items: [
+            { label: "Siatki", href: "/kategoria/koty/akcesoria-i-suplementy/siatki" },
+          ]
+        },
+        {
+          label: "Drapaki",
+          items: [
+            { label: "Drapaki", href: "/kategoria/koty/akcesoria-i-suplementy/drapaki" },
+          ]
+        },
+        {
+          label: "Gadżety",
+          items: [
+            { label: "Gadżety", href: "/kategoria/koty/akcesoria-i-suplementy/gadzety" },
+          ]
+        },
+        {
+          label: "Witaminy i suplementy",
+          items: [
+            { label: "Witaminy i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy/witaminy-i-suplementy" },
+          ]
+        },
+        {
+          label: "Szampony i ochrona",
+          items: [
+            { label: "Szampony i ochrona", href: "/kategoria/koty/akcesoria-i-suplementy/szampony-i-ochrona" },
+          ]
+        },
+      ]
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
@@ -100,57 +416,54 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Psa</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid gap-3 p-6 w-[600px] grid-cols-3">
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
-                      <ul className="space-y-2">
-                        {dogCategories.karma.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Przysmaki</h4>
-                      <ul className="space-y-2">
-                        {dogCategories.przysmaki.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Akcesoria i zdrowie</h4>
-                      <ul className="space-y-2">
-                        {dogCategories.akcesoria.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="p-4 w-[800px]">
+                    <div className="grid grid-cols-5 gap-4">
+                      {dogCategories.map((category) => (
+                        <div key={category.href} className="space-y-2 group">
+                          <Link
+                            to={category.href}
+                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                          >
+                            {category.label}
+                          </Link>
+                          {category.subcategories.length > 0 && (
+                            <ul className="space-y-1.5 pl-2 border-l-2 border-border">
+                              {category.subcategories.map((subcat) => (
+                                <li key={subcat.label}>
+                                  {subcat.items.length === 1 ? (
+                                    <Link
+                                      to={subcat.items[0].href}
+                                      className="block text-xs text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                      {subcat.label}
+                                    </Link>
+                                  ) : (
+                                    <div className="relative group/sub">
+                                      <div className="text-xs font-medium text-muted-foreground hover:text-primary cursor-pointer">
+                                        {subcat.label}
+                                      </div>
+                                      <div className="hidden group-hover/sub:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-lg p-3 min-w-[180px] z-50">
+                                        <ul className="space-y-1.5">
+                                          {subcat.items.map((item) => (
+                                            <li key={item.href}>
+                                              <Link
+                                                to={item.href}
+                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors"
+                                              >
+                                                {item.label}
+                                              </Link>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </NavigationMenuContent>
@@ -160,40 +473,54 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid gap-3 p-6 w-[600px] grid-cols-2">
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
-                      <ul className="space-y-2">
-                        {catCategories.karma.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Akcesoria i suplementy</h4>
-                      <ul className="space-y-2">
-                        {catCategories.akcesoria.map((item) => (
-                          <li key={item.href}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                to={item.href}
-                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.label}
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="p-4 w-[800px]">
+                    <div className="grid grid-cols-6 gap-4">
+                      {catCategories.map((category) => (
+                        <div key={category.href} className="space-y-2 group">
+                          <Link
+                            to={category.href}
+                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                          >
+                            {category.label}
+                          </Link>
+                          {category.subcategories.length > 0 && (
+                            <ul className="space-y-1.5 pl-2 border-l-2 border-border">
+                              {category.subcategories.map((subcat) => (
+                                <li key={subcat.label}>
+                                  {subcat.items.length === 1 ? (
+                                    <Link
+                                      to={subcat.items[0].href}
+                                      className="block text-xs text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                      {subcat.label}
+                                    </Link>
+                                  ) : (
+                                    <div className="relative group/sub">
+                                      <div className="text-xs font-medium text-muted-foreground hover:text-primary cursor-pointer">
+                                        {subcat.label}
+                                      </div>
+                                      <div className="hidden group-hover/sub:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-lg p-3 min-w-[180px] z-50">
+                                        <ul className="space-y-1.5">
+                                          {subcat.items.map((item) => (
+                                            <li key={item.href}>
+                                              <Link
+                                                to={item.href}
+                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors"
+                                              >
+                                                {item.label}
+                                              </Link>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </NavigationMenuContent>
