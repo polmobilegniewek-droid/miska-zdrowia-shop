@@ -41,9 +41,10 @@ serve(async (req) => {
     
     console.log('Request params:', { kategoria, sku });
     
-    // Fetch the XML file from the public directory
-    const origin = url.origin.replace('https://', 'https://id-preview--');
-    const xmlUrl = `${origin}/products.xml`;
+    // Get the origin from the Referer header (where the request came from)
+    const referer = req.headers.get('referer') || req.headers.get('origin') || '';
+    const appOrigin = referer ? new URL(referer).origin : '';
+    const xmlUrl = appOrigin ? `${appOrigin}/products.xml` : '/products.xml';
     console.log('Fetching XML from:', xmlUrl);
     
     const xmlResponse = await fetch(xmlUrl);
