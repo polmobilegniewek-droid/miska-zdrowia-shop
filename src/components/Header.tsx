@@ -37,34 +37,47 @@ const Header = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
 
   const dogCategories = {
-    type: [
-      { label: "Sucha", href: "/kategoria/dla-psa/sucha" },
-      { label: "Mokra", href: "/kategoria/dla-psa/mokra" },
-      { label: "Weterynaryjna", href: "/kategoria/dla-psa/weterynaryjna" },
-      { label: "Przysmaki", href: "/kategoria/dla-psa/przysmaki" },
+    karma: [
+      { label: "Sucha karma", href: "/kategoria/psy/sucha-karma" },
+      { label: "Bezzbożowa", href: "/kategoria/psy/sucha-karma/bezbozowa" },
+      { label: "Karma Light/Senior", href: "/kategoria/psy/sucha-karma/karma-light-senior" },
+      { label: "Mokra karma", href: "/kategoria/psy/mokra-karma" },
+      { label: "Próbki karm", href: "/kategoria/psy/probki-karm" },
     ],
-    needs: [
-      { label: "Szczeniak", href: "/kategoria/dla-psa/szczeniak" },
-      { label: "Dorosły", href: "/kategoria/dla-psa/dorosly" },
-      { label: "Senior", href: "/kategoria/dla-psa/senior" },
-      { label: "Hipoalergiczna", href: "/kategoria/dla-psa/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/kategoria/dla-psa/bezbozowa" },
+    przysmaki: [
+      { label: "Wszystkie przysmaki", href: "/kategoria/psy/przysmaki" },
+      { label: "Ciastka i łakocie", href: "/kategoria/psy/przysmaki/ciastka-i-lakocie" },
+      { label: "Do żucia", href: "/kategoria/psy/przysmaki/do-zucia" },
+      { label: "Kości", href: "/kategoria/psy/przysmaki/kosci" },
+      { label: "Naturalne i gryzaki", href: "/kategoria/psy/przysmaki/naturalne-i-gryzaki" },
+      { label: "Treningowe", href: "/kategoria/psy/przysmaki/treningowe" },
+    ],
+    akcesoria: [
+      { label: "Akcesoria i zdrowie", href: "/kategoria/psy/akcesoria-i-zdrowie" },
+      { label: "Zabawki", href: "/kategoria/psy/akcesoria-i-zdrowie/zabawki" },
+      { label: "Miski", href: "/kategoria/psy/akcesoria-i-zdrowie/miski" },
+      { label: "Smycze i szelki", href: "/kategoria/psy/akcesoria-i-zdrowie/smycze-i-szelki" },
+      { label: "Witaminy i suplementy", href: "/kategoria/psy/akcesoria-i-zdrowie/witaminy-i-suplementy" },
+      { label: "Szampony i ochrona", href: "/kategoria/psy/akcesoria-i-zdrowie/szampony-i-ochrona" },
     ],
   };
 
   const catCategories = {
-    type: [
-      { label: "Sucha", href: "/kategoria/dla-kota/sucha" },
-      { label: "Mokra", href: "/kategoria/dla-kota/mokra" },
-      { label: "Weterynaryjna", href: "/kategoria/dla-kota/weterynaryjna" },
-      { label: "Przysmaki", href: "/kategoria/dla-kota/przysmaki" },
+    karma: [
+      { label: "Sucha karma", href: "/kategoria/koty/sucha-karma" },
+      { label: "Mokra karma dla kota", href: "/kategoria/koty/mokra-karma-dla-kota" },
+      { label: "Puszki", href: "/kategoria/koty/mokra-karma-dla-kota/puszki" },
+      { label: "Próbki karm", href: "/kategoria/koty/probki-karm" },
+      { label: "Przysmaki", href: "/kategoria/koty/przysmaki" },
     ],
-    needs: [
-      { label: "Kocię", href: "/kategoria/dla-kota/kocie" },
-      { label: "Dorosły", href: "/kategoria/dla-kota/dorosly" },
-      { label: "Senior", href: "/kategoria/dla-kota/senior" },
-      { label: "Hipoalergiczna", href: "/kategoria/dla-kota/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/kategoria/dla-kota/bezbozowa" },
+    akcesoria: [
+      { label: "Akcesoria i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy" },
+      { label: "Drapaki", href: "/kategoria/koty/akcesoria-i-suplementy/drapaki" },
+      { label: "Zabawki", href: "/kategoria/koty/akcesoria-i-suplementy/zabawki" },
+      { label: "Kuwety", href: "/kategoria/koty/akcesoria-i-suplementy/kuwety" },
+      { label: "Żwirki", href: "/kategoria/koty/akcesoria-i-suplementy/zwirki" },
+      { label: "Witaminy i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy/witaminy-i-suplementy" },
+      { label: "Szczotki i grzebienie", href: "/kategoria/koty/akcesoria-i-suplementy/szczotki-i-grzebienie" },
     ],
   };
 
@@ -89,9 +102,9 @@ const Header = () => {
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[600px] grid-cols-3">
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Rodzaj karmy</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
                       <ul className="space-y-2">
-                        {dogCategories.type.map((item) => (
+                        {dogCategories.karma.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -106,9 +119,9 @@ const Header = () => {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Potrzeby</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Przysmaki</h4>
                       <ul className="space-y-2">
-                        {dogCategories.needs.map((item) => (
+                        {dogCategories.przysmaki.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -123,12 +136,21 @@ const Header = () => {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <div className="rounded-lg bg-accent/10 p-4 space-y-2">
-                        <img src="/placeholder.svg" alt="Promocja" className="w-full h-24 object-cover rounded-md" />
-                        <Link to="/promocje/bezbozowa" className="block text-sm font-semibold text-accent hover:underline">
-                          Promocja na karmy bezzbożowe!
-                        </Link>
-                      </div>
+                      <h4 className="text-sm font-semibold text-foreground">Akcesoria i zdrowie</h4>
+                      <ul className="space-y-2">
+                        {dogCategories.akcesoria.map((item) => (
+                          <li key={item.href}>
+                            <NavigationMenuLink asChild>
+                              <Link
+                                to={item.href}
+                                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                              >
+                                {item.label}
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </NavigationMenuContent>
@@ -138,11 +160,11 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="grid gap-3 p-6 w-[600px] grid-cols-3">
+                  <div className="grid gap-3 p-6 w-[600px] grid-cols-2">
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Rodzaj karmy</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
                       <ul className="space-y-2">
-                        {catCategories.type.map((item) => (
+                        {catCategories.karma.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -157,9 +179,9 @@ const Header = () => {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Potrzeby</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Akcesoria i suplementy</h4>
                       <ul className="space-y-2">
-                        {catCategories.needs.map((item) => (
+                        {catCategories.akcesoria.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -172,14 +194,6 @@ const Header = () => {
                           </li>
                         ))}
                       </ul>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="rounded-lg bg-accent/10 p-4 space-y-2">
-                        <img src="/placeholder.svg" alt="Promocja" className="w-full h-24 object-cover rounded-md" />
-                        <Link to="/promocje/bezbozowa" className="block text-sm font-semibold text-accent hover:underline">
-                          Promocja na karmy bezzbożowe!
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </NavigationMenuContent>
