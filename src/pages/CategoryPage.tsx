@@ -34,9 +34,8 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Używamy nowego API z Lovable Cloud
-        const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-products${kategoria ? `?kategoria=${encodeURIComponent(kategoria)}` : ''}`;
-        const response = await fetch(functionUrl);
+        // Dodajemy parametr `kategoria` do URL
+        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
         if (!response.ok) {
           throw new Error('Nie udało się pobrać produktów');
@@ -177,10 +176,7 @@ const CategoryPage = () => {
                             {product.nazwa}
                           </h2>
                           {product.opis && (
-                            <p 
-                              className="text-sm text-muted-foreground line-clamp-2"
-                              dangerouslySetInnerHTML={{ __html: product.opis }} 
-                            />
+                            <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
                           )}
                           <div className="flex items-center space-x-2">
                             <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
