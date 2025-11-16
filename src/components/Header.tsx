@@ -37,34 +37,34 @@ const Header = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
 
   const dogCategories = {
-    type: [
-      { label: "Sucha", href: "/kategoria/dla-psa/sucha" },
-      { label: "Mokra", href: "/kategoria/dla-psa/mokra" },
-      { label: "Weterynaryjna", href: "/kategoria/dla-psa/weterynaryjna" },
-      { label: "Przysmaki", href: "/kategoria/dla-psa/przysmaki" },
+    karma: [
+      { label: "Sucha karma", href: "/kategoria/psy/sucha-karma" },
+      { label: "Mokra karma", href: "/kategoria/psy/mokra-karma" },
+      { label: "Przysmaki", href: "/kategoria/psy/przysmaki" },
+      { label: "Próbki karm", href: "/kategoria/psy/probki-karm" },
     ],
-    needs: [
-      { label: "Szczeniak", href: "/kategoria/dla-psa/szczeniak" },
-      { label: "Dorosły", href: "/kategoria/dla-psa/dorosly" },
-      { label: "Senior", href: "/kategoria/dla-psa/senior" },
-      { label: "Hipoalergiczna", href: "/kategoria/dla-psa/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/kategoria/dla-psa/bezbozowa" },
+    akcesoria: [
+      { label: "Akcesoria i zdrowie", href: "/kategoria/psy/akcesoria-i-zdrowie" },
+      { label: "Witaminy i suplementy", href: "/kategoria/psy/akcesoria-i-zdrowie/witaminy-i-suplementy" },
+      { label: "Zabawki", href: "/kategoria/psy/akcesoria-i-zdrowie/zabawki" },
+      { label: "Smycze i szelki", href: "/kategoria/psy/akcesoria-i-zdrowie/smycze-i-szelki" },
+      { label: "Miski", href: "/kategoria/psy/akcesoria-i-zdrowie/miski" },
     ],
   };
 
   const catCategories = {
-    type: [
-      { label: "Sucha", href: "/kategoria/dla-kota/sucha" },
-      { label: "Mokra", href: "/kategoria/dla-kota/mokra" },
-      { label: "Weterynaryjna", href: "/kategoria/dla-kota/weterynaryjna" },
-      { label: "Przysmaki", href: "/kategoria/dla-kota/przysmaki" },
+    karma: [
+      { label: "Sucha karma", href: "/kategoria/koty/sucha-karma" },
+      { label: "Mokra karma", href: "/kategoria/koty/mokra-karma-dla-kota" },
+      { label: "Przysmaki", href: "/kategoria/koty/przysmaki" },
+      { label: "Próbki karm", href: "/kategoria/koty/probki-karm" },
     ],
-    needs: [
-      { label: "Kocię", href: "/kategoria/dla-kota/kocie" },
-      { label: "Dorosły", href: "/kategoria/dla-kota/dorosly" },
-      { label: "Senior", href: "/kategoria/dla-kota/senior" },
-      { label: "Hipoalergiczna", href: "/kategoria/dla-kota/hipoalergiczna" },
-      { label: "Bezzbożowa", href: "/kategoria/dla-kota/bezbozowa" },
+    akcesoria: [
+      { label: "Akcesoria i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy" },
+      { label: "Witaminy i suplementy", href: "/kategoria/koty/akcesoria-i-suplementy/witaminy-i-suplementy" },
+      { label: "Zabawki", href: "/kategoria/koty/akcesoria-i-suplementy/zabawki" },
+      { label: "Kuwety i żwirki", href: "/kategoria/koty/akcesoria-i-suplementy/kuwety" },
+      { label: "Drapaki", href: "/kategoria/koty/akcesoria-i-suplementy/drapaki" },
     ],
   };
 
@@ -89,9 +89,9 @@ const Header = () => {
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[600px] grid-cols-3">
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Rodzaj karmy</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
                       <ul className="space-y-2">
-                        {dogCategories.type.map((item) => (
+                        {dogCategories.karma.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -106,9 +106,9 @@ const Header = () => {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Potrzeby</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Akcesoria</h4>
                       <ul className="space-y-2">
-                        {dogCategories.needs.map((item) => (
+                        {dogCategories.akcesoria.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -140,9 +140,9 @@ const Header = () => {
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[600px] grid-cols-3">
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Rodzaj karmy</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Karma</h4>
                       <ul className="space-y-2">
-                        {catCategories.type.map((item) => (
+                        {catCategories.karma.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
@@ -157,9 +157,9 @@ const Header = () => {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-foreground">Potrzeby</h4>
+                      <h4 className="text-sm font-semibold text-foreground">Akcesoria</h4>
                       <ul className="space-y-2">
-                        {catCategories.needs.map((item) => (
+                        {catCategories.akcesoria.map((item) => (
                           <li key={item.href}>
                             <NavigationMenuLink asChild>
                               <Link
