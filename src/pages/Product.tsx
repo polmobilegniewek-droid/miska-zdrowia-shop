@@ -37,7 +37,8 @@ const Product = () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch(`https://serwer2583155.home.pl/getProductDetails.php?sku=${sku}`);
+        const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-products?sku=${sku}`;
+        const response = await fetch(functionUrl);
         
         if (!response.ok) {
           throw new Error("Nie udało się pobrać danych produktu");

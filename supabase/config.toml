@@ -1,0 +1,4 @@
+project_id = "mtutsynracpxihfcuehd"
+
+[functions.get-products]
+verify_jwt = false
