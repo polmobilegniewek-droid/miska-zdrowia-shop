@@ -34,8 +34,9 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Dodajemy parametr `kategoria` do URL
-        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
+        // Używamy nowego API z Lovable Cloud
+        const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-products${kategoria ? `?kategoria=${encodeURIComponent(kategoria)}` : ''}`;
+        const response = await fetch(functionUrl);
         
         if (!response.ok) {
           throw new Error('Nie udało się pobrać produktów');

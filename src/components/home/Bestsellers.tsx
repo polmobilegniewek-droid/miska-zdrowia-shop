@@ -24,7 +24,8 @@ const Bestsellers = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://serwer2583155.home.pl/getProdukty.php');
+        const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-products`;
+        const response = await fetch(functionUrl);
         
         if (!response.ok) {
           throw new Error('Nie udało się pobrać produktów');
