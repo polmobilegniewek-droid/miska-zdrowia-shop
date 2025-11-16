@@ -1,10 +1,33 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Helper function to extract text from XML tags
+function extractTag(xml: string, tag: string): string | null {
+  const pattern = new RegExp(`<${tag}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>|<${tag}>([^<]*)<\\/${tag}>`, 'i');
+  const match = xml.match(pattern);
+  return match ? (match[1] || match[2] || '').trim() : null;
+}
+
+// Helper function to extract all category tags
+function extractCategories(xml: string): string[] {
+  const categoriesMatch = xml.match(/<categories>([\s\S]*?)<\/categories>/i);
+  if (!categoriesMatch) return [];
+  
+  const categoriesXml = categoriesMatch[1];
+  const categoryMatches = categoriesXml.matchAll(/<category><!\\[CDATA\\[(.*?)\\]\\]><\/category>/g);
+  
+  const categories: string[] = [];
+  for (const match of categoryMatches) {
+    if (match[1]) {
+      categories.push(match[1].trim());
+    }
+  }
+  return categories;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -16,62 +39,50 @@ serve(async (req) => {
     const kategoria = url.searchParams.get('kategoria');
     const sku = url.searchParams.get('sku');
     
-    // Fetch the XML file
-    const xmlUrl = `${Deno.env.get('SUPABASE_URL')?.replace('/rest/v1', '')}/storage/v1/object/public/products/products.xml`;
+    console.log('Request params:', { kategoria, sku });
+    
+    // Fetch the XML file from the public directory
+    const origin = url.origin.replace('https://', 'https://id-preview--');
+    const xmlUrl = `${origin}/products.xml`;
     console.log('Fetching XML from:', xmlUrl);
     
     const xmlResponse = await fetch(xmlUrl);
     if (!xmlResponse.ok) {
+      console.error('Failed to fetch XML:', xmlResponse.statusText);
       throw new Error(`Failed to fetch XML: ${xmlResponse.statusText}`);
     }
     
     const xmlText = await xmlResponse.text();
+    console.log('XML fetched, length:', xmlText.length);
     
-    // Parse XML using DOMParser
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    
-    if (!xmlDoc) {
-      throw new Error('Failed to parse XML');
-    }
-    
-    const products = xmlDoc.querySelectorAll('product');
+    // Split by products
+    const productMatches = xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g);
     const productList = [];
     
-    for (const productNode of products) {
-      const product = productNode as Element;
-      const code = product.querySelector('code')?.textContent?.trim() || '';
-      const name = product.querySelector('name')?.textContent?.trim() || '';
-      const description = product.querySelector('description')?.textContent?.trim() || '';
-      const price = product.querySelector('price_netto')?.textContent?.trim() || '0';
-      const producer = product.querySelector('producer')?.textContent?.trim() || '';
+    for (const match of productMatches) {
+      const productXml = match[1];
+      
+      const code = extractTag(productXml, 'code') || '';
+      const name = extractTag(productXml, 'name') || '';
+      const description = extractTag(productXml, 'description') || '';
+      const price = extractTag(productXml, 'price_netto') || '0';
+      const producer = extractTag(productXml, 'producer') || '';
       
       // Get image URL
-      const images = product.querySelector('images');
+      const imagesMatch = productXml.match(/<images>([\s\S]*?)<\/images>/i);
       let imageUrl = '';
-      if (images) {
-        const largeImage = images.querySelector('large');
+      if (imagesMatch) {
+        const largeImage = extractTag(imagesMatch[1], 'large');
         if (largeImage) {
-          imageUrl = largeImage.textContent?.trim() || '';
+          imageUrl = largeImage;
         }
       }
       
       // Get categories
-      const categoriesNode = product.querySelector('categories');
-      const categories = [];
-      if (categoriesNode) {
-        const categoryNodes = categoriesNode.querySelectorAll('category');
-        for (const cat of categoryNodes) {
-          const catText = cat.textContent?.trim();
-          if (catText) {
-            categories.push(catText);
-          }
-        }
-      }
+      const categories = extractCategories(productXml);
       
       // Get stock
-      const stockNode = product.querySelector('stock');
-      const stock = stockNode?.textContent?.trim() || '0';
+      const stock = extractTag(productXml, 'stock') || '0';
       
       // Filter by SKU if provided
       if (sku && code !== sku) {
@@ -92,7 +103,7 @@ serve(async (req) => {
           } else if (searchLower.includes('dla-psa/')) {
             const subcat = searchLower.replace('dla-psa/', '');
             if (subcat === 'dorosly') {
-              return catLower.includes('psy dorosłe');
+              return catLower.includes('psy dorosłe') || catLower.includes('psy / sucha karma / karma wg. wieku / psy dorosłe');
             } else if (subcat === 'szczeniak') {
               return catLower.includes('szczenią');
             } else if (subcat === 'senior') {
@@ -101,7 +112,7 @@ serve(async (req) => {
           } else if (searchLower.includes('dla-kota/')) {
             const subcat = searchLower.replace('dla-kota/', '');
             if (subcat === 'dorosly') {
-              return catLower.includes('koty dorosłe');
+              return catLower.includes('koty dorosłe') || catLower.includes('koty / sucha karma / karma wg. wieku / koty dorosłe');
             } else if (subcat === 'kociak') {
               return catLower.includes('kociąt') || catLower.includes('kocią');
             } else if (subcat === 'senior') {
@@ -127,6 +138,8 @@ serve(async (req) => {
         kategorie: categories
       });
     }
+    
+    console.log(`Found ${productList.length} products`);
     
     // If single product requested, return object instead of array
     if (sku && productList.length > 0) {
