@@ -416,51 +416,40 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Psa</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[800px]">
-                    <div className="grid grid-cols-5 gap-4">
+                  <div className="p-6 w-[700px]">
+                    <div className="flex flex-col gap-3">
                       {dogCategories.map((category) => (
-                        <div key={category.href} className="space-y-2 group">
+                        <div key={category.href} className="relative group/main">
                           <Link
                             to={category.href}
-                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
                           >
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <ul className="space-y-1.5 pl-2 border-l-2 border-border">
-                              {category.subcategories.map((subcat) => (
-                                <li key={subcat.label}>
-                                  {subcat.items.length === 1 ? (
-                                    <Link
-                                      to={subcat.items[0].href}
-                                      className="block text-xs text-muted-foreground hover:text-primary transition-colors"
-                                    >
+                            <div className="hidden group-hover/main:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-xl p-4 min-w-[500px] z-50">
+                              <div className="grid grid-cols-2 gap-4">
+                                {category.subcategories.map((subcat) => (
+                                  <div key={subcat.label} className="space-y-2">
+                                    <div className="text-xs font-semibold text-foreground border-b pb-1">
                                       {subcat.label}
-                                    </Link>
-                                  ) : (
-                                    <div className="relative group/sub">
-                                      <div className="text-xs font-medium text-muted-foreground hover:text-primary cursor-pointer">
-                                        {subcat.label}
-                                      </div>
-                                      <div className="hidden group-hover/sub:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-lg p-3 min-w-[180px] z-50">
-                                        <ul className="space-y-1.5">
-                                          {subcat.items.map((item) => (
-                                            <li key={item.href}>
-                                              <Link
-                                                to={item.href}
-                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors"
-                                              >
-                                                {item.label}
-                                              </Link>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
                                     </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
+                                    <ul className="space-y-1.5">
+                                      {subcat.items.map((item) => (
+                                        <li key={item.href}>
+                                          <Link
+                                            to={item.href}
+                                            className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                          >
+                                            {item.label}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
                       ))}
@@ -473,51 +462,40 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[800px]">
-                    <div className="grid grid-cols-6 gap-4">
+                  <div className="p-6 w-[700px]">
+                    <div className="flex flex-col gap-3">
                       {catCategories.map((category) => (
-                        <div key={category.href} className="space-y-2 group">
+                        <div key={category.href} className="relative group/main">
                           <Link
                             to={category.href}
-                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
                           >
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <ul className="space-y-1.5 pl-2 border-l-2 border-border">
-                              {category.subcategories.map((subcat) => (
-                                <li key={subcat.label}>
-                                  {subcat.items.length === 1 ? (
-                                    <Link
-                                      to={subcat.items[0].href}
-                                      className="block text-xs text-muted-foreground hover:text-primary transition-colors"
-                                    >
+                            <div className="hidden group-hover/main:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-xl p-4 min-w-[500px] z-50">
+                              <div className="grid grid-cols-2 gap-4">
+                                {category.subcategories.map((subcat) => (
+                                  <div key={subcat.label} className="space-y-2">
+                                    <div className="text-xs font-semibold text-foreground border-b pb-1">
                                       {subcat.label}
-                                    </Link>
-                                  ) : (
-                                    <div className="relative group/sub">
-                                      <div className="text-xs font-medium text-muted-foreground hover:text-primary cursor-pointer">
-                                        {subcat.label}
-                                      </div>
-                                      <div className="hidden group-hover/sub:block absolute left-full top-0 ml-2 bg-card border rounded-lg shadow-lg p-3 min-w-[180px] z-50">
-                                        <ul className="space-y-1.5">
-                                          {subcat.items.map((item) => (
-                                            <li key={item.href}>
-                                              <Link
-                                                to={item.href}
-                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors"
-                                              >
-                                                {item.label}
-                                              </Link>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
                                     </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
+                                    <ul className="space-y-1.5">
+                                      {subcat.items.map((item) => (
+                                        <li key={item.href}>
+                                          <Link
+                                            to={item.href}
+                                            className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                          >
+                                            {item.label}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
                       ))}
