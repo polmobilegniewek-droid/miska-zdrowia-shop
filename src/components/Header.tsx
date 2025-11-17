@@ -303,7 +303,78 @@ const Header = () => {
     {
       label: "Sucha karma",
       href: "/kategoria/koty/sucha-karma",
-      subcategories: []
+      subcategories: [
+        {
+          label: "Karma wg. smaku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Bez kurczaka", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/bez-kurczaka",
+            },
+            { 
+              label: "Oparta na kurczaku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-kurczaku",
+            },
+            { 
+              label: "Oparta na króliku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-kroliku",
+            },
+            { 
+              label: "Oparta na indyku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-indyku",
+            },
+            { 
+              label: "Oparta na wołowinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-wolowinie",
+            },
+            { 
+              label: "Oparta na jagnięcinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-jagniecinie",
+            },
+            { 
+              label: "Oparta na wieprzowinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-wieprzowinie",
+            },
+            { 
+              label: "Oparta na rybie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-rybie",
+            },
+            { 
+              label: "Oparta na dziczyźnie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-dzicczyznie",
+            },
+          ]
+        },
+        {
+          label: "Karma wg. wieku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Dla kociąt", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/dla-kociat",
+            },
+            { 
+              label: "Koty dorosłe", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/koty-dorosle",
+            },
+            { 
+              label: "Dla seniora", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/dla-seniora",
+            },
+          ]
+        },
+        {
+          label: "Bezzbożowa",
+          href: "/kategoria/koty/sucha-karma/bezbozowa",
+          items: []
+        },
+        {
+          label: "Karma Light/Senior",
+          href: "/kategoria/koty/sucha-karma/karma-light-senior",
+          items: []
+        },
+      ]
     },
     {
       label: "Mokra karma dla kota",
@@ -463,24 +534,38 @@ const Header = () => {
                               }}>
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
-                                  <div key={subcat.label} className="space-y-2">
+                                  <div key={subcat.label} className="space-y-2 relative group/third">
                                     {subcat.hasSubItems ? (
                                       <>
-                                        <div className="text-xs font-semibold text-foreground border-b pb-1">
+                                        <div className="flex items-center justify-between text-xs font-semibold text-foreground border-b pb-1 cursor-pointer hover:text-primary transition-colors">
                                           {subcat.label}
+                                          <ChevronRight className="h-3 w-3" />
                                         </div>
-                                        <ul className="space-y-1.5">
-                                          {subcat.items.map((item) => (
-                                            <li key={item.href} className="relative group/submenu">
-                                              <Link
-                                                to={item.href}
-                                                className="flex items-center justify-between text-xs text-muted-foreground hover:text-primary transition-colors py-1"
-                                              >
-                                                {item.label}
-                                              </Link>
-                                            </li>
-                                          ))}
-                                        </ul>
+                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[200px] z-[10000]"
+                                          style={{
+                                            left: 'var(--third-menu-left)',
+                                            top: 'var(--third-menu-top)'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                            if (rect) {
+                                              e.currentTarget.style.setProperty('--third-menu-left', `${rect.right + 8}px`);
+                                              e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
+                                            }
+                                          }}>
+                                          <ul className="space-y-1.5">
+                                            {subcat.items.map((item) => (
+                                              <li key={item.href}>
+                                                <Link
+                                                  to={item.href}
+                                                  className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                >
+                                                  {item.label}
+                                                </Link>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
                                       </>
                                     ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
@@ -549,8 +634,40 @@ const Header = () => {
                               }}>
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
-                                  <div key={subcat.label} className="space-y-2">
-                                    {subcat.items.length === 0 && subcat.href ? (
+                                  <div key={subcat.label} className="space-y-2 relative group/third">
+                                    {subcat.hasSubItems ? (
+                                      <>
+                                        <div className="flex items-center justify-between text-xs font-semibold text-foreground border-b pb-1 cursor-pointer hover:text-primary transition-colors">
+                                          {subcat.label}
+                                          <ChevronRight className="h-3 w-3" />
+                                        </div>
+                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[200px] z-[10000]"
+                                          style={{
+                                            left: 'var(--third-menu-left)',
+                                            top: 'var(--third-menu-top)'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                            if (rect) {
+                                              e.currentTarget.style.setProperty('--third-menu-left', `${rect.right + 8}px`);
+                                              e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
+                                            }
+                                          }}>
+                                          <ul className="space-y-1.5">
+                                            {subcat.items.map((item) => (
+                                              <li key={item.href}>
+                                                <Link
+                                                  to={item.href}
+                                                  className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                >
+                                                  {item.label}
+                                                </Link>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      </>
+                                    ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
                                         to={subcat.href}
                                         className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
