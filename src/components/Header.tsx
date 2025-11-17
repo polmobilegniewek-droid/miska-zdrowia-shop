@@ -520,7 +520,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[9999]" 
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in" 
                               style={{
                                 left: 'var(--submenu-left)',
                                 top: 'var(--submenu-top)'
@@ -532,16 +532,16 @@ const Header = () => {
                                   e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
                                 }
                               }}>
-                              <div className="grid grid-cols-3 gap-4">
+                              <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
-                                  <div key={subcat.label} className="space-y-2 relative group/third">
+                                  <div key={subcat.label} className="relative group/third">
                                     {subcat.hasSubItems ? (
                                       <>
-                                        <div className="flex items-center justify-between text-xs font-semibold text-foreground border-b pb-1 cursor-pointer hover:text-primary transition-colors">
+                                        <div className="flex items-center justify-between text-sm font-semibold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
                                           {subcat.label}
-                                          <ChevronRight className="h-3 w-3" />
+                                          <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[200px] z-[10000]"
+                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
                                           style={{
                                             left: 'var(--third-menu-left)',
                                             top: 'var(--third-menu-top)'
@@ -553,12 +553,12 @@ const Header = () => {
                                               e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
                                             }
                                           }}>
-                                          <ul className="space-y-1.5">
+                                          <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
                                                 <Link
                                                   to={item.href}
-                                                  className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                  className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                                 >
                                                   {item.label}
                                                 </Link>
@@ -570,21 +570,21 @@ const Header = () => {
                                     ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
                                         to={subcat.href}
-                                        className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                       >
                                         {subcat.label}
                                       </Link>
                                     ) : (
                                       <>
-                                        <div className="text-xs font-semibold text-foreground border-b pb-1">
+                                        <div className="text-sm font-semibold text-foreground pb-1">
                                           {subcat.label}
                                         </div>
-                                        <ul className="space-y-1.5">
+                                        <ul className="space-y-2">
                                           {subcat.items.map((item) => (
                                             <li key={item.href}>
                                               <Link
                                                 to={item.href}
-                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                               >
                                                 {item.label}
                                               </Link>
@@ -620,7 +620,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[9999]"
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in"
                               style={{
                                 left: 'var(--submenu-left)',
                                 top: 'var(--submenu-top)'
@@ -632,16 +632,16 @@ const Header = () => {
                                   e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
                                 }
                               }}>
-                              <div className="grid grid-cols-3 gap-4">
+                              <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
-                                  <div key={subcat.label} className="space-y-2 relative group/third">
+                                  <div key={subcat.label} className="relative group/third">
                                     {subcat.hasSubItems ? (
                                       <>
-                                        <div className="flex items-center justify-between text-xs font-semibold text-foreground border-b pb-1 cursor-pointer hover:text-primary transition-colors">
+                                        <div className="flex items-center justify-between text-sm font-semibold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
                                           {subcat.label}
-                                          <ChevronRight className="h-3 w-3" />
+                                          <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[200px] z-[10000]"
+                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
                                           style={{
                                             left: 'var(--third-menu-left)',
                                             top: 'var(--third-menu-top)'
@@ -653,12 +653,12 @@ const Header = () => {
                                               e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
                                             }
                                           }}>
-                                          <ul className="space-y-1.5">
+                                          <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
                                                 <Link
                                                   to={item.href}
-                                                  className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                  className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                                 >
                                                   {item.label}
                                                 </Link>
@@ -670,21 +670,21 @@ const Header = () => {
                                     ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
                                         to={subcat.href}
-                                        className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                       >
                                         {subcat.label}
                                       </Link>
                                     ) : (
                                       <>
-                                        <div className="text-xs font-semibold text-foreground border-b pb-1">
+                                        <div className="text-sm font-semibold text-foreground pb-1">
                                           {subcat.label}
                                         </div>
-                                        <ul className="space-y-1.5">
+                                        <ul className="space-y-2">
                                           {subcat.items.map((item) => (
                                             <li key={item.href}>
                                               <Link
                                                 to={item.href}
-                                                className="block text-xs text-muted-foreground hover:text-primary transition-colors py-1"
+                                                className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                               >
                                                 {item.label}
                                               </Link>
