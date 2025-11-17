@@ -415,11 +415,11 @@ const Header = () => {
               {/* Dla Psa Mega Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Psa</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="p-4 w-[300px]">
+                <NavigationMenuContent className="overflow-visible">
+                  <div className="p-4 w-[300px] overflow-visible">
                     <div className="flex flex-col gap-1">
                       {dogCategories.map((category) => (
-                        <div key={category.href} className="relative group">
+                        <div key={category.href} className="relative group overflow-visible">
                           <Link
                             to={category.href}
                             className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
@@ -427,7 +427,18 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]">
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[9999]" 
+                              style={{
+                                left: 'var(--submenu-left)',
+                                top: 'var(--submenu-top)'
+                              }}
+                              onMouseEnter={(e) => {
+                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                if (rect) {
+                                  e.currentTarget.style.setProperty('--submenu-left', `${rect.right + 8}px`);
+                                  e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
+                                }
+                              }}>
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
@@ -461,11 +472,11 @@ const Header = () => {
               {/* Dla Kota Mega Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="p-4 w-[300px]">
+                <NavigationMenuContent className="overflow-visible">
+                  <div className="p-4 w-[300px] overflow-visible">
                     <div className="flex flex-col gap-1">
                       {catCategories.map((category) => (
-                        <div key={category.href} className="relative group">
+                        <div key={category.href} className="relative group overflow-visible">
                           <Link
                             to={category.href}
                             className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
@@ -473,7 +484,18 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]">
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[9999]"
+                              style={{
+                                left: 'var(--submenu-left)',
+                                top: 'var(--submenu-top)'
+                              }}
+                              onMouseEnter={(e) => {
+                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                                if (rect) {
+                                  e.currentTarget.style.setProperty('--submenu-left', `${rect.right + 8}px`);
+                                  e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
+                                }
+                              }}>
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
