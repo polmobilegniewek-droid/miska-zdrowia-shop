@@ -416,8 +416,8 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Psa</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[700px]">
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="p-4 w-[300px]">
+                    <div className="flex flex-col gap-1">
                       {dogCategories.map((category) => (
                         <div key={category.href} className="relative group">
                           <Link
@@ -427,7 +427,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-0 top-full mt-1 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[100]">
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[100]">
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
@@ -462,8 +462,8 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="p-4 w-[700px]">
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="p-4 w-[300px]">
+                    <div className="flex flex-col gap-1">
                       {catCategories.map((category) => (
                         <div key={category.href} className="relative group">
                           <Link
@@ -473,7 +473,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-0 top-full mt-1 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[100]">
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[100]">
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
