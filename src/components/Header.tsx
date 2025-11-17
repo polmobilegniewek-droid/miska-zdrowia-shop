@@ -520,18 +520,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in" 
-                              style={{
-                                left: 'var(--submenu-left)',
-                                top: 'var(--submenu-top)'
-                              }}
-                              onMouseEnter={(e) => {
-                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                                if (rect) {
-                                  e.currentTarget.style.setProperty('--submenu-left', `${rect.right + 8}px`);
-                                  e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
-                                }
-                              }}>
+                            <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[100] animate-fade-in">
                               <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="relative group/third">
@@ -541,18 +530,7 @@ const Header = () => {
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
-                                          style={{
-                                            left: 'var(--third-menu-left)',
-                                            top: 'var(--third-menu-top)'
-                                          }}
-                                          onMouseEnter={(e) => {
-                                            const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                                            if (rect) {
-                                              e.currentTarget.style.setProperty('--third-menu-left', `${rect.right + 8}px`);
-                                              e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
-                                            }
-                                          }}>
+                                        <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[110] animate-fade-in">
                                           <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
@@ -620,18 +598,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in"
-                              style={{
-                                left: 'var(--submenu-left)',
-                                top: 'var(--submenu-top)'
-                              }}
-                              onMouseEnter={(e) => {
-                                const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                                if (rect) {
-                                  e.currentTarget.style.setProperty('--submenu-left', `${rect.right + 8}px`);
-                                  e.currentTarget.style.setProperty('--submenu-top', `${rect.top}px`);
-                                }
-                              }}>
+                            <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[100] animate-fade-in">
                               <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="relative group/third">
@@ -641,18 +608,7 @@ const Header = () => {
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 fixed bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
-                                          style={{
-                                            left: 'var(--third-menu-left)',
-                                            top: 'var(--third-menu-top)'
-                                          }}
-                                          onMouseEnter={(e) => {
-                                            const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                                            if (rect) {
-                                              e.currentTarget.style.setProperty('--third-menu-left', `${rect.right + 8}px`);
-                                              e.currentTarget.style.setProperty('--third-menu-top', `${rect.top}px`);
-                                            }
-                                          }}>
+                                        <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[110] animate-fade-in">
                                           <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
