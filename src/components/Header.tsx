@@ -520,7 +520,16 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[100] animate-fade-in">
+                            <div 
+                              className="fixed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in"
+                              onMouseEnter={(e) => {
+                                const rect = e.currentTarget.previousElementSibling?.getBoundingClientRect();
+                                if (rect) {
+                                  e.currentTarget.style.left = `${rect.right + 8}px`;
+                                  e.currentTarget.style.top = `${rect.top}px`;
+                                }
+                              }}
+                            >
                               <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="relative group/third">
@@ -530,7 +539,16 @@ const Header = () => {
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[110] animate-fade-in">
+                                        <div 
+                                          className="fixed opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
+                                          onMouseEnter={(e) => {
+                                            const rect = e.currentTarget.previousElementSibling?.getBoundingClientRect();
+                                            if (rect) {
+                                              e.currentTarget.style.left = `${rect.right + 8}px`;
+                                              e.currentTarget.style.top = `${rect.top}px`;
+                                            }
+                                          }}
+                                        >
                                           <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
@@ -598,7 +616,16 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[100] animate-fade-in">
+                            <div 
+                              className="fixed opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[280px] z-[9999] animate-fade-in"
+                              onMouseEnter={(e) => {
+                                const rect = e.currentTarget.previousElementSibling?.getBoundingClientRect();
+                                if (rect) {
+                                  e.currentTarget.style.left = `${rect.right + 8}px`;
+                                  e.currentTarget.style.top = `${rect.top}px`;
+                                }
+                              }}
+                            >
                               <div className="flex flex-col gap-3">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="relative group/third">
@@ -608,7 +635,16 @@ const Header = () => {
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
-                                        <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[110] animate-fade-in">
+                                        <div 
+                                          className="fixed opacity-0 invisible group-hover/third:opacity-100 group-hover/third:visible transition-all duration-200 bg-popover border rounded-lg shadow-xl p-4 w-[240px] z-[10000] animate-fade-in"
+                                          onMouseEnter={(e) => {
+                                            const rect = e.currentTarget.previousElementSibling?.getBoundingClientRect();
+                                            if (rect) {
+                                              e.currentTarget.style.left = `${rect.right + 8}px`;
+                                              e.currentTarget.style.top = `${rect.top}px`;
+                                            }
+                                          }}
+                                        >
                                           <ul className="space-y-2">
                                             {subcat.items.map((item) => (
                                               <li key={item.href}>
