@@ -415,11 +415,11 @@ const Header = () => {
               {/* Dla Psa Mega Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Psa</NavigationMenuTrigger>
-                <NavigationMenuContent className="overflow-visible">
-                  <div className="p-4 w-[300px] overflow-visible">
+                <NavigationMenuContent>
+                  <div className="p-4 w-[300px]">
                     <div className="flex flex-col gap-1">
                       {dogCategories.map((category) => (
-                        <div key={category.href} className="relative group overflow-visible">
+                        <div key={category.href} className="relative group">
                           <Link
                             to={category.href}
                             className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
@@ -427,7 +427,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]" style={{ left: 'calc(100% + 0.5rem)' }}>
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]">
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
@@ -461,11 +461,11 @@ const Header = () => {
               {/* Dla Kota Mega Menu */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-sm font-medium">Dla Kota</NavigationMenuTrigger>
-                <NavigationMenuContent className="overflow-visible">
-                  <div className="p-4 w-[300px] overflow-visible">
+                <NavigationMenuContent>
+                  <div className="p-4 w-[300px]">
                     <div className="flex flex-col gap-1">
                       {catCategories.map((category) => (
-                        <div key={category.href} className="relative group overflow-visible">
+                        <div key={category.href} className="relative group">
                           <Link
                             to={category.href}
                             className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
@@ -473,7 +473,7 @@ const Header = () => {
                             {category.label}
                           </Link>
                           {category.subcategories.length > 0 && (
-                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 fixed left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]" style={{ left: 'calc(100% + 0.5rem)' }}>
+                            <div className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 absolute left-full top-0 ml-2 bg-popover border rounded-lg shadow-xl p-4 w-[650px] z-[200]">
                               <div className="grid grid-cols-3 gap-4">
                                 {category.subcategories.map((subcat) => (
                                   <div key={subcat.label} className="space-y-2">
