@@ -528,7 +528,7 @@ const Header = () => {
                                   <div key={subcat.label} className="relative group/third">
                                     {subcat.hasSubItems ? (
                                       <>
-                                        <div className="flex items-center justify-between text-sm font-semibold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
+                                        <div className="flex items-center justify-between text-sm font-bold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
@@ -552,13 +552,13 @@ const Header = () => {
                                     ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
                                         to={subcat.href}
-                                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
+                                        className="block text-sm font-normal text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                       >
                                         {subcat.label}
                                       </Link>
                                     ) : (
                                       <>
-                                        <div className="text-sm font-semibold text-foreground pb-1">
+                                        <div className="text-sm font-bold text-foreground pb-1">
                                           {subcat.label}
                                         </div>
                                         <ul className="space-y-2">
@@ -610,7 +610,7 @@ const Header = () => {
                                   <div key={subcat.label} className="relative group/third">
                                     {subcat.hasSubItems ? (
                                       <>
-                                        <div className="flex items-center justify-between text-sm font-semibold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
+                                        <div className="flex items-center justify-between text-sm font-bold text-foreground pb-1 cursor-pointer hover:text-primary transition-colors">
                                           {subcat.label}
                                           <ChevronRight className="h-4 w-4" />
                                         </div>
@@ -634,13 +634,13 @@ const Header = () => {
                                     ) : subcat.items.length === 0 && subcat.href ? (
                                       <Link
                                         to={subcat.href}
-                                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
+                                        className="block text-sm font-normal text-muted-foreground hover:text-primary transition-colors py-1.5 px-2 rounded-md hover:bg-accent/50"
                                       >
                                         {subcat.label}
                                       </Link>
                                     ) : (
                                       <>
-                                        <div className="text-sm font-semibold text-foreground pb-1">
+                                        <div className="text-sm font-bold text-foreground pb-1">
                                           {subcat.label}
                                         </div>
                                         <ul className="space-y-2">
