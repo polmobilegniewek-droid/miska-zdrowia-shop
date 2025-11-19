@@ -515,7 +515,11 @@ const Header = () => {
                         <div key={category.href} className="relative group overflow-visible">
                           <Link
                             to={category.href}
-                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
+                            className={`block text-sm hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50 ${
+                              category.subcategories.length > 0 
+                                ? 'font-bold text-foreground' 
+                                : 'font-medium text-muted-foreground'
+                            }`}
                           >
                             {category.label}
                           </Link>
@@ -597,7 +601,11 @@ const Header = () => {
                         <div key={category.href} className="relative group overflow-visible">
                           <Link
                             to={category.href}
-                            className="block text-sm font-semibold text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50"
+                            className={`block text-sm hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-accent/50 ${
+                              category.subcategories.length > 0 
+                                ? 'font-bold text-foreground' 
+                                : 'font-medium text-muted-foreground'
+                            }`}
                           >
                             {category.label}
                           </Link>
