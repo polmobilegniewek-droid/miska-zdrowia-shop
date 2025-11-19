@@ -123,4 +123,9 @@ All colors MUST be HSL.
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
+  
+  /* Fix for Radix Navigation Menu viewport overflow cutting off flyout submenus */
+  [data-radix-navigation-menu-viewport] {
+    overflow: visible !important;
+  }
 }
