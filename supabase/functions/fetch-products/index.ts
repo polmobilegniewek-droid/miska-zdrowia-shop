@@ -75,12 +75,25 @@ function parseXMLProducts(xmlText: string): Product[] {
         // Stock
         const quantity = getTagContent("quantity") || "0";
         
-        // Images
+        // Images - try multiple patterns
         const images: string[] = [];
-        const imageMatches = Array.from(productXml.matchAll(/<img[^>]*>[\s\S]*?<url[^>]*>(.*?)<\/url>[\s\S]*?<\/img>/g));
+        
+        // Pattern 1: <img><url>...</url></img>
+        let imageMatches = Array.from(productXml.matchAll(/<img[^>]*>[\s\S]*?<url[^>]*>(.*?)<\/url>[\s\S]*?<\/img>/g));
+        
+        // Pattern 2: <imgs><large>...</large></imgs>
+        if (imageMatches.length === 0) {
+          imageMatches = Array.from(productXml.matchAll(/<imgs[^>]*>[\s\S]*?<large[^>]*>(.*?)<\/large>[\s\S]*?<\/imgs>/g));
+        }
+        
+        // Pattern 3: Direct <large> tags
+        if (imageMatches.length === 0) {
+          imageMatches = Array.from(productXml.matchAll(/<large[^>]*>(.*?)<\/large>/g));
+        }
+        
         for (const imgMatch of imageMatches) {
-          const url = imgMatch[1].trim();
-          if (url) images.push(url);
+          const url = cleanCDATA(imgMatch[1].trim());
+          if (url && url.startsWith('http')) images.push(url);
         }
 
         // Other details
@@ -148,14 +161,22 @@ function parseStockXML(xmlText: string): Map<string, { quantity: string; price_n
         
         const code = getTagContent("code");
         const quantity = getTagContent("quantity") || "0";
-        const priceNetto = getTagContent("price_netto") || "0";
+        // Try both price_netto and price (brutto)
+        const priceBrutto = getTagContent("price");
+        const priceNetto = getTagContent("price_netto");
         const active = getTagContent("active") === "1";
         const minOrder = getTagContent("min_order") || "1";
+        
+        // Calculate netto from brutto if only brutto is available
+        let finalPriceNetto = priceNetto || "0";
+        if (!priceNetto && priceBrutto) {
+          finalPriceNetto = (parseFloat(priceBrutto) / 1.23).toFixed(4);
+        }
         
         if (code) {
           stockMap.set(code, {
             quantity,
-            price_netto: priceNetto,
+            price_netto: finalPriceNetto,
             active,
             min_order: minOrder
           });
