@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,55 +27,58 @@ interface Product {
 }
 
 function parseXMLProducts(xmlText: string): Product[] {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlText, "text/xml");
-  
-  if (!doc) {
-    throw new Error("Failed to parse XML");
-  }
-
   const products: Product[] = [];
-  const productNodes = doc.querySelectorAll("product");
+  
+  // Simple regex-based XML parsing for better compatibility
+  const productMatches = xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g);
+  
+  for (const productMatch of productMatches) {
+    const productXml = productMatch[1];
 
-  productNodes.forEach((productNode: any) => {
     try {
-      const id = productNode.querySelector("id")?.textContent || "";
-      const code = productNode.querySelector("code")?.textContent || "";
-      const name = productNode.querySelector("name")?.textContent || "";
-      const description = productNode.querySelector("description")?.textContent || null;
-      const producer = productNode.querySelector("producer")?.textContent || "";
-      const active = productNode.querySelector("active")?.textContent === "1";
+      // Helper function to extract text from XML tags
+      const getTagContent = (tag: string): string | null => {
+        const match = productXml.match(new RegExp(`<${tag}>(.*?)<\/${tag}>`, 's'));
+        return match ? match[1].trim() : null;
+      };
+
+      const id = getTagContent("id") || "";
+      const code = getTagContent("code") || "";
+      const name = getTagContent("name") || "";
+      const description = getTagContent("description");
+      const producer = getTagContent("producer") || "";
+      const active = getTagContent("active") === "1";
       
       // Categories
-      const categoryNodes = productNode.querySelectorAll("category");
       const categories: string[] = [];
-      categoryNodes.forEach((cat: any) => {
-        const catText = cat.textContent?.trim();
+      const categoryMatches = productXml.matchAll(/<category>(.*?)<\/category>/g);
+      for (const catMatch of categoryMatches) {
+        const catText = catMatch[1].trim();
         if (catText) categories.push(catText);
-      });
+      }
 
       // Prices
-      const priceNetto = productNode.querySelector("price_netto")?.textContent || "0";
-      const defaultPriceNetto = productNode.querySelector("default_price_netto")?.textContent || "0";
+      const priceNetto = getTagContent("price_netto") || "0";
+      const defaultPriceNetto = getTagContent("default_price_netto") || "0";
       
       // Stock
-      const quantity = productNode.querySelector("quantity")?.textContent || "0";
+      const quantity = getTagContent("quantity") || "0";
       
       // Images
-      const imageNodes = productNode.querySelectorAll("img url");
       const images: string[] = [];
-      imageNodes.forEach((img: any) => {
-        const url = img.textContent?.trim();
+      const imageMatches = productXml.matchAll(/<img>[\s\S]*?<url>(.*?)<\/url>[\s\S]*?<\/img>/g);
+      for (const imgMatch of imageMatches) {
+        const url = imgMatch[1].trim();
         if (url) images.push(url);
-      });
+      }
 
       // Other details
-      const weight = productNode.querySelector("weight")?.textContent || "0";
-      const unit = productNode.querySelector("unit")?.textContent || "sztuka";
+      const weight = getTagContent("weight") || "0";
+      const unit = getTagContent("unit") || "sztuka";
       
       // EAN
-      const eanNode = productNode.querySelector('attribute[type="1"] value');
-      const ean = eanNode?.textContent || null;
+      const eanMatch = productXml.match(/<attribute type="1">[\s\S]*?<value>(.*?)<\/value>[\s\S]*?<\/attribute>/);
+      const ean = eanMatch ? eanMatch[1].trim() : null;
 
       products.push({
         id,
@@ -98,7 +100,7 @@ function parseXMLProducts(xmlText: string): Product[] {
     } catch (error) {
       console.error("Error parsing product:", error);
     }
-  });
+  }
 
   return products;
 }
