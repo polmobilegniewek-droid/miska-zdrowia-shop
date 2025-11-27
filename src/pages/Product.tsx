@@ -16,7 +16,17 @@ interface Product {
   cena_netto: string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
+  aktywny: boolean;
+  min_order?: string;
+  producent: string;
+  waga: string;
+  jednostka: string;
 }
+
+const calculateBrutto = (netto: string): number => {
+  const nettoPrice = parseFloat(netto);
+  return nettoPrice * 1.23; // VAT 23%
+};
 
 const Product = () => {
   const { id: sku } = useParams<{ id: string }>();
@@ -156,12 +166,26 @@ const Product = () => {
 
               {/* Price */}
               <div className="bg-secondary/30 p-6 rounded-xl">
-                <div className="flex items-baseline space-x-2 mb-4">
-                  <span className="text-3xl font-bold text-foreground">{parseFloat(product.cena_netto).toFixed(2)} zł</span>
-                  <span className="text-sm text-muted-foreground">(netto)</span>
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-baseline space-x-2">
+                    <span className="text-4xl font-bold text-foreground">
+                      {calculateBrutto(product.cena_netto).toFixed(2)} zł
+                    </span>
+                    <span className="text-sm text-muted-foreground">brutto</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Cena netto: {parseFloat(product.cena_netto).toFixed(2)} zł
+                  </p>
                 </div>
-                <div className="text-sm text-muted-foreground mb-4">
-                  Na stanie: {product.stan_magazynowy} szt.
+                <div className="text-sm mb-4">
+                  <span className={parseInt(product.stan_magazynowy) > 0 ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+                    {parseInt(product.stan_magazynowy) > 0 ? `Na stanie: ${product.stan_magazynowy} szt.` : 'Brak w magazynie'}
+                  </span>
+                  {product.min_order && parseInt(product.min_order) > 1 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Minimalne zamówienie: {product.min_order} szt.
+                    </p>
+                  )}
                 </div>
 
                 {/* Weight Selection */}
@@ -214,7 +238,7 @@ const Product = () => {
                       id: `${product.sku}-${selectedWeight}`,
                       sku: product.sku,
                       name: product.nazwa,
-                      price: parseFloat(product.cena_netto),
+                      price: calculateBrutto(product.cena_netto),
                       image: product.url_zdjecia || placeholderImage,
                       weight: selectedWeight,
                       quantity: quantity,

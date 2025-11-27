@@ -19,7 +19,14 @@ interface Product {
   cena_netto: string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
+  aktywny: boolean;
+  min_order?: string;
 }
+
+const calculateBrutto = (netto: string): number => {
+  const nettoPrice = parseFloat(netto);
+  return nettoPrice * 1.23; // VAT 23%
+};
 
 const CategoryPage = () => {
   const { '*': kategoria } = useParams();
@@ -176,10 +183,19 @@ const CategoryPage = () => {
                           {product.opis && (
                             <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
                           )}
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
+                          <div className="space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-2xl font-bold text-foreground">
+                                {calculateBrutto(product.cena_netto).toFixed(2)} zł
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              (netto: {parseFloat(product.cena_netto).toFixed(2)} zł)
+                            </p>
                           </div>
-                          <p className="text-sm text-muted-foreground">Na stanie: {product.stan_magazynowy} szt.</p>
+                          <p className="text-sm text-muted-foreground">
+                            Na stanie: {parseInt(product.stan_magazynowy) > 0 ? `${product.stan_magazynowy} szt.` : 'Brak'}
+                          </p>
                         </CardContent>
                       </Link>
                       <CardFooter className="p-4 pt-0">
@@ -190,7 +206,7 @@ const CategoryPage = () => {
                             id: product.sku,
                             sku: product.sku,
                             name: product.nazwa,
-                            price: parseFloat(product.cena_netto),
+                            price: calculateBrutto(product.cena_netto),
                             image: product.url_zdjecia || placeholderImage,
                           })}
                         >

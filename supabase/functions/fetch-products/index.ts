@@ -209,6 +209,11 @@ serve(async (req) => {
     
     console.log(`Parsed ${products.length} products and ${stockMap.size} stock entries`);
     
+    // Log sample product for debugging
+    if (products.length > 0) {
+      console.log('Sample product data:', JSON.stringify(products[0], null, 2));
+    }
+    
     // Merge stock data into products
     products = products.map(product => {
       const stockData = stockMap.get(product.sku);
