@@ -9,6 +9,7 @@ import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/integrations/supabase/client";
 import placeholderImage from "/placeholder.svg";
 
 interface Product {
@@ -34,15 +35,13 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Dodajemy parametr `kategoria` do URL
-        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
+        const { data, error } = await supabase.functions.invoke('fetch-products', {
+          body: { kategoria: kategoria || '' }
+        });
         
-        if (!response.ok) {
-          throw new Error('Nie udało się pobrać produktów');
-        }
+        if (error) throw error;
         
-        const data = await response.json();
-        setProducts(data);
+        setProducts(data || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
       } finally {
@@ -51,7 +50,6 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
-    // Dodajemy kategoria do tablicy zależności
   }, [kategoria]);
 
   return (
