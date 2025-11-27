@@ -423,7 +423,7 @@ const Header = () => {
         },
         {
           label: "Żwirek dla kota",
-          href: "/kategoria/koty/akcesoria-i-suplementy/zwirek-dla-kota",
+          href: "/kategoria/koty/akcesoria-i-suplementy/zwirki",
           items: []
         },
         {
