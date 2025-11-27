@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const XML_URL = 'https://www.hurtowniakarm.pl/oferta-produktow-pelna.xml?user=yHj93go4kHOJbTSv1ELRBNoRG7S%2BLm81lZqFUH6c6Vs%3D';
+const XML_STANY_URL = 'https://www.hurtowniakarm.pl/oferta-produktow-stany.xml?user=yHj93go4kHOJbTSv1ELRBNoRG7S%2BLm81lZqFUH6c6Vs%3D';
 
 interface Product {
   id: string;
@@ -24,6 +25,7 @@ interface Product {
   jednostka: string;
   ean: string | null;
   aktywny: boolean;
+  min_order?: string;
 }
 
 function parseXMLProducts(xmlText: string): Product[] {
@@ -120,6 +122,55 @@ function parseXMLProducts(xmlText: string): Product[] {
   return products;
 }
 
+// Parse stock and price XML
+function parseStockXML(xmlText: string): Map<string, { quantity: string; price_netto: string; active: boolean; min_order: string }> {
+  const stockMap = new Map();
+  
+  // Helper function to remove CDATA wrapper
+  const cleanCDATA = (text: string | null): string | null => {
+    if (!text) return text;
+    return text.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim();
+  };
+  
+  try {
+    const productMatches = Array.from(xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g));
+    
+    console.log(`Found ${productMatches.length} stock entries`);
+    
+    for (const productMatch of productMatches) {
+      const productXml = productMatch[1];
+      
+      try {
+        const getTagContent = (tag: string): string | null => {
+          const match = productXml.match(new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 's'));
+          return match ? cleanCDATA(match[1].trim()) : null;
+        };
+        
+        const code = getTagContent("code");
+        const quantity = getTagContent("quantity") || "0";
+        const priceNetto = getTagContent("price_netto") || "0";
+        const active = getTagContent("active") === "1";
+        const minOrder = getTagContent("min_order") || "1";
+        
+        if (code) {
+          stockMap.set(code, {
+            quantity,
+            price_netto: priceNetto,
+            active,
+            min_order: minOrder
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing stock entry:", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error in parseStockXML:", error);
+  }
+  
+  return stockMap;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -130,18 +181,48 @@ serve(async (req) => {
     const kategoria = url.searchParams.get('kategoria');
     const sku = url.searchParams.get('sku');
 
-    console.log('Fetching XML from hurtownia...');
-    const response = await fetch(XML_URL);
+    console.log('Fetching XMLs from hurtownia...');
     
-    if (!response.ok) {
-      throw new Error(`Failed to fetch XML: ${response.statusText}`);
+    // Fetch both XMLs in parallel
+    const [mainResponse, stockResponse] = await Promise.all([
+      fetch(XML_URL),
+      fetch(XML_STANY_URL)
+    ]);
+    
+    if (!mainResponse.ok) {
+      throw new Error(`Failed to fetch main XML: ${mainResponse.statusText}`);
+    }
+    if (!stockResponse.ok) {
+      throw new Error(`Failed to fetch stock XML: ${stockResponse.statusText}`);
     }
 
-    const xmlText = await response.text();
-    console.log('XML fetched, parsing products...');
+    const [mainXmlText, stockXmlText] = await Promise.all([
+      mainResponse.text(),
+      stockResponse.text()
+    ]);
     
-    let products = parseXMLProducts(xmlText);
-    console.log(`Parsed ${products.length} products`);
+    console.log('XMLs fetched, parsing...');
+    
+    // Parse both XMLs
+    let products = parseXMLProducts(mainXmlText);
+    const stockMap = parseStockXML(stockXmlText);
+    
+    console.log(`Parsed ${products.length} products and ${stockMap.size} stock entries`);
+    
+    // Merge stock data into products
+    products = products.map(product => {
+      const stockData = stockMap.get(product.sku);
+      if (stockData) {
+        return {
+          ...product,
+          cena_netto: stockData.price_netto,
+          stan_magazynowy: stockData.quantity,
+          aktywny: stockData.active,
+          min_order: stockData.min_order
+        };
+      }
+      return product;
+    });
 
     // Filter by SKU if requested
     if (sku) {
