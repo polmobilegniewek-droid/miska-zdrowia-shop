@@ -29,6 +29,12 @@ interface Product {
 function parseXMLProducts(xmlText: string): Product[] {
   const products: Product[] = [];
   
+  // Helper function to remove CDATA wrapper
+  const cleanCDATA = (text: string | null): string | null => {
+    if (!text) return text;
+    return text.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim();
+  };
+  
   try {
     // Simple regex-based XML parsing for better compatibility
     const productMatches = Array.from(xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g));
@@ -39,10 +45,10 @@ function parseXMLProducts(xmlText: string): Product[] {
       const productXml = productMatch[1];
 
       try {
-        // Helper function to extract text from XML tags
+        // Helper function to extract text from XML tags and clean CDATA
         const getTagContent = (tag: string): string | null => {
           const match = productXml.match(new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 's'));
-          return match ? match[1].trim() : null;
+          return match ? cleanCDATA(match[1].trim()) : null;
         };
 
         const id = getTagContent("id") || "";
@@ -52,11 +58,11 @@ function parseXMLProducts(xmlText: string): Product[] {
         const producer = getTagContent("producer") || "";
         const active = getTagContent("active") === "1";
         
-        // Categories - extract all categories
+        // Categories - extract all categories and clean CDATA
         const categories: string[] = [];
         const categoryMatches = Array.from(productXml.matchAll(/<category[^>]*>(.*?)<\/category>/g));
         for (const catMatch of categoryMatches) {
-          const catText = catMatch[1].trim();
+          const catText = cleanCDATA(catMatch[1].trim());
           if (catText) categories.push(catText);
         }
 
@@ -79,9 +85,9 @@ function parseXMLProducts(xmlText: string): Product[] {
         const weight = getTagContent("weight") || "0";
         const unit = getTagContent("unit") || "sztuka";
         
-        // EAN
+        // EAN - clean CDATA from value tag
         const eanMatch = productXml.match(/<attribute[^>]*type="1"[^>]*>[\s\S]*?<value[^>]*>(.*?)<\/value>[\s\S]*?<\/attribute>/);
-        const ean = eanMatch ? eanMatch[1].trim() : null;
+        const ean = eanMatch ? cleanCDATA(eanMatch[1].trim()) : null;
 
         // Only add products that have at least basic data
         if (id && code && name) {
