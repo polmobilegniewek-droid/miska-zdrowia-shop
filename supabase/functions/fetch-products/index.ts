@@ -31,10 +31,14 @@ interface Product {
 function parseXMLProducts(xmlText: string): Product[] {
   const products: Product[] = [];
   
-  // Helper function to remove CDATA wrapper
+  // Helper function to remove CDATA wrapper and clean XML tags
   const cleanCDATA = (text: string | null): string | null => {
     if (!text) return text;
-    return text.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim();
+    // Remove CDATA wrapper
+    let cleaned = text.replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1');
+    // Remove any remaining XML tags like <value>
+    cleaned = cleaned.replace(/<[^>]+>/g, '');
+    return cleaned.trim();
   };
   
   try {
@@ -75,25 +79,22 @@ function parseXMLProducts(xmlText: string): Product[] {
         // Stock
         const quantity = getTagContent("quantity") || "0";
         
-        // Images - try multiple patterns
+        // Images - extract from imgs section
         const images: string[] = [];
         
-        // Pattern 1: <img><url>...</url></img>
-        let imageMatches = Array.from(productXml.matchAll(/<img[^>]*>[\s\S]*?<url[^>]*>(.*?)<\/url>[\s\S]*?<\/img>/g));
-        
-        // Pattern 2: <imgs><large>...</large></imgs>
-        if (imageMatches.length === 0) {
-          imageMatches = Array.from(productXml.matchAll(/<imgs[^>]*>[\s\S]*?<large[^>]*>(.*?)<\/large>[\s\S]*?<\/imgs>/g));
-        }
-        
-        // Pattern 3: Direct <large> tags
-        if (imageMatches.length === 0) {
-          imageMatches = Array.from(productXml.matchAll(/<large[^>]*>(.*?)<\/large>/g));
-        }
-        
-        for (const imgMatch of imageMatches) {
-          const url = cleanCDATA(imgMatch[1].trim());
-          if (url && url.startsWith('http')) images.push(url);
+        // Look for all image URLs in the imgs section
+        const imgsMatch = productXml.match(/<imgs[^>]*>([\s\S]*?)<\/imgs>/);
+        if (imgsMatch) {
+          const imgsContent = imgsMatch[1];
+          // Extract all URLs from large, medium, and small tags
+          const urlMatches = Array.from(imgsContent.matchAll(/<(?:large|medium|small)[^>]*>([\s\S]*?)<\/(?:large|medium|small)>/g));
+          for (const urlMatch of urlMatches) {
+            const url = cleanCDATA(urlMatch[1]);
+            if (url && url.startsWith('http')) {
+              images.push(url);
+              break; // Only take the first valid image
+            }
+          }
         }
 
         // Other details
@@ -161,15 +162,20 @@ function parseStockXML(xmlText: string): Map<string, { quantity: string; price_n
         
         const code = getTagContent("code");
         const quantity = getTagContent("quantity") || "0";
-        // Try both price_netto and price (brutto)
-        const priceBrutto = getTagContent("price");
-        const priceNetto = getTagContent("price_netto");
         const active = getTagContent("active") === "1";
         const minOrder = getTagContent("min_order") || "1";
         
-        // Calculate netto from brutto if only brutto is available
-        let finalPriceNetto = priceNetto || "0";
-        if (!priceNetto && priceBrutto) {
+        // Price handling: XML_STANY_URL contains BRUTTO price in <price> tag
+        // We need to convert it to NETTO by dividing by 1.23
+        const priceBrutto = getTagContent("price");
+        const priceNettoFromXml = getTagContent("price_netto");
+        
+        let finalPriceNetto = "0";
+        if (priceNettoFromXml) {
+          // If netto is explicitly provided, use it
+          finalPriceNetto = priceNettoFromXml;
+        } else if (priceBrutto) {
+          // If only brutto is available, calculate netto
           finalPriceNetto = (parseFloat(priceBrutto) / 1.23).toFixed(4);
         }
         
