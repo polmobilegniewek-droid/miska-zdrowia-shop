@@ -29,77 +29,86 @@ interface Product {
 function parseXMLProducts(xmlText: string): Product[] {
   const products: Product[] = [];
   
-  // Simple regex-based XML parsing for better compatibility
-  const productMatches = xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g);
-  
-  for (const productMatch of productMatches) {
-    const productXml = productMatch[1];
+  try {
+    // Simple regex-based XML parsing for better compatibility
+    const productMatches = Array.from(xmlText.matchAll(/<product>([\s\S]*?)<\/product>/g));
+    
+    console.log(`Found ${productMatches.length} product nodes`);
+    
+    for (const productMatch of productMatches) {
+      const productXml = productMatch[1];
 
-    try {
-      // Helper function to extract text from XML tags
-      const getTagContent = (tag: string): string | null => {
-        const match = productXml.match(new RegExp(`<${tag}>(.*?)<\/${tag}>`, 's'));
-        return match ? match[1].trim() : null;
-      };
+      try {
+        // Helper function to extract text from XML tags
+        const getTagContent = (tag: string): string | null => {
+          const match = productXml.match(new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 's'));
+          return match ? match[1].trim() : null;
+        };
 
-      const id = getTagContent("id") || "";
-      const code = getTagContent("code") || "";
-      const name = getTagContent("name") || "";
-      const description = getTagContent("description");
-      const producer = getTagContent("producer") || "";
-      const active = getTagContent("active") === "1";
-      
-      // Categories
-      const categories: string[] = [];
-      const categoryMatches = productXml.matchAll(/<category>(.*?)<\/category>/g);
-      for (const catMatch of categoryMatches) {
-        const catText = catMatch[1].trim();
-        if (catText) categories.push(catText);
+        const id = getTagContent("id") || "";
+        const code = getTagContent("code") || "";
+        const name = getTagContent("name") || "";
+        const description = getTagContent("description");
+        const producer = getTagContent("producer") || "";
+        const active = getTagContent("active") === "1";
+        
+        // Categories - extract all categories
+        const categories: string[] = [];
+        const categoryMatches = Array.from(productXml.matchAll(/<category[^>]*>(.*?)<\/category>/g));
+        for (const catMatch of categoryMatches) {
+          const catText = catMatch[1].trim();
+          if (catText) categories.push(catText);
+        }
+
+        // Prices
+        const priceNetto = getTagContent("price_netto") || "0";
+        const defaultPriceNetto = getTagContent("default_price_netto") || "0";
+        
+        // Stock
+        const quantity = getTagContent("quantity") || "0";
+        
+        // Images
+        const images: string[] = [];
+        const imageMatches = Array.from(productXml.matchAll(/<img[^>]*>[\s\S]*?<url[^>]*>(.*?)<\/url>[\s\S]*?<\/img>/g));
+        for (const imgMatch of imageMatches) {
+          const url = imgMatch[1].trim();
+          if (url) images.push(url);
+        }
+
+        // Other details
+        const weight = getTagContent("weight") || "0";
+        const unit = getTagContent("unit") || "sztuka";
+        
+        // EAN
+        const eanMatch = productXml.match(/<attribute[^>]*type="1"[^>]*>[\s\S]*?<value[^>]*>(.*?)<\/value>[\s\S]*?<\/attribute>/);
+        const ean = eanMatch ? eanMatch[1].trim() : null;
+
+        // Only add products that have at least basic data
+        if (id && code && name) {
+          products.push({
+            id,
+            sku: code,
+            nazwa: name,
+            opis: description,
+            producent: producer,
+            kategorie: categories,
+            cena_netto: priceNetto,
+            cena_domyslna: defaultPriceNetto,
+            stan_magazynowy: quantity,
+            url_zdjecia: images[0] || null,
+            wszystkie_zdjecia: images,
+            waga: weight,
+            jednostka: unit,
+            ean,
+            aktywny: active
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing individual product:", error);
       }
-
-      // Prices
-      const priceNetto = getTagContent("price_netto") || "0";
-      const defaultPriceNetto = getTagContent("default_price_netto") || "0";
-      
-      // Stock
-      const quantity = getTagContent("quantity") || "0";
-      
-      // Images
-      const images: string[] = [];
-      const imageMatches = productXml.matchAll(/<img>[\s\S]*?<url>(.*?)<\/url>[\s\S]*?<\/img>/g);
-      for (const imgMatch of imageMatches) {
-        const url = imgMatch[1].trim();
-        if (url) images.push(url);
-      }
-
-      // Other details
-      const weight = getTagContent("weight") || "0";
-      const unit = getTagContent("unit") || "sztuka";
-      
-      // EAN
-      const eanMatch = productXml.match(/<attribute type="1">[\s\S]*?<value>(.*?)<\/value>[\s\S]*?<\/attribute>/);
-      const ean = eanMatch ? eanMatch[1].trim() : null;
-
-      products.push({
-        id,
-        sku: code,
-        nazwa: name,
-        opis: description,
-        producent: producer,
-        kategorie: categories,
-        cena_netto: priceNetto,
-        cena_domyslna: defaultPriceNetto,
-        stan_magazynowy: quantity,
-        url_zdjecia: images[0] || null,
-        wszystkie_zdjecia: images,
-        waga: weight,
-        jednostka: unit,
-        ean,
-        aktywny: active
-      });
-    } catch (error) {
-      console.error("Error parsing product:", error);
     }
+  } catch (error) {
+    console.error("Error in parseXMLProducts:", error);
   }
 
   return products;
