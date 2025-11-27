@@ -63,13 +63,20 @@ const Header = () => {
       try {
         const { data, error } = await supabase.functions.invoke('fetch-products');
         
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching products:', error);
+          throw error;
+        }
         
+        console.log('Fetched products:', data?.slice(0, 2)); // Log first 2 products
         const products = data as any[];
         
         // Build category tree from product categories
         const dogCats = buildCategoryTree(products, 'Psy');
         const catCats = buildCategoryTree(products, 'Koty');
+        
+        console.log('Dog categories built:', dogCats);
+        console.log('Cat categories built:', catCats);
         
         setDogCategories(dogCats);
         setCatCategories(catCats);
