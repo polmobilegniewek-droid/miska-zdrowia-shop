@@ -25,7 +25,7 @@ interface Product {
 
 const calculateBrutto = (netto: string): number => {
   const nettoPrice = parseFloat(netto);
-  return nettoPrice * 1.23; // VAT 23%
+  return nettoPrice * 1.08; // VAT 8% dla karmy
 };
 
 const CategoryPage = () => {

@@ -79,20 +79,19 @@ function parseXMLProducts(xmlText: string): Product[] {
         // Stock
         const quantity = getTagContent("quantity") || "0";
         
-        // Images - extract from imgs section
+        // Images - extract from images section
         const images: string[] = [];
         
-        // Look for all image URLs in the imgs section
-        const imgsMatch = productXml.match(/<imgs[^>]*>([\s\S]*?)<\/imgs>/);
-        if (imgsMatch) {
-          const imgsContent = imgsMatch[1];
-          // Extract all URLs from large, medium, and small tags
-          const urlMatches = Array.from(imgsContent.matchAll(/<(?:large|medium|small)[^>]*>([\s\S]*?)<\/(?:large|medium|small)>/g));
+        // Look for all image URLs in the images section: <images><img><url>
+        const imagesMatch = productXml.match(/<images[^>]*>([\s\S]*?)<\/images>/);
+        if (imagesMatch) {
+          const imagesContent = imagesMatch[1];
+          // Extract all URLs from <img><url> tags
+          const urlMatches = Array.from(imagesContent.matchAll(/<img[^>]*>[\s\S]*?<url[^>]*>([\s\S]*?)<\/url>[\s\S]*?<\/img>/g));
           for (const urlMatch of urlMatches) {
             const url = cleanCDATA(urlMatch[1]);
             if (url && url.startsWith('http')) {
               images.push(url);
-              break; // Only take the first valid image
             }
           }
         }
@@ -165,18 +164,13 @@ function parseStockXML(xmlText: string): Map<string, { quantity: string; price_n
         const active = getTagContent("active") === "1";
         const minOrder = getTagContent("min_order") || "1";
         
-        // Price handling: XML_STANY_URL contains BRUTTO price in <price> tag
-        // We need to convert it to NETTO by dividing by 1.23
-        const priceBrutto = getTagContent("price");
+        // Price handling: price_netto is NETTO price
+        // VAT is 8% for pet food (from <tax><value>8</value>)
         const priceNettoFromXml = getTagContent("price_netto");
         
         let finalPriceNetto = "0";
         if (priceNettoFromXml) {
-          // If netto is explicitly provided, use it
           finalPriceNetto = priceNettoFromXml;
-        } else if (priceBrutto) {
-          // If only brutto is available, calculate netto
-          finalPriceNetto = (parseFloat(priceBrutto) / 1.23).toFixed(4);
         }
         
         if (code) {
