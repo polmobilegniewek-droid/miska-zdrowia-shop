@@ -97,7 +97,7 @@ const Header = () => {
             },
             { 
               label: "Oparta na dziczyźnie", 
-              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-dzicczyznie",
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-dziczyznie",
             },
           ]
         },
@@ -342,7 +342,7 @@ const Header = () => {
             },
             { 
               label: "Oparta na dziczyźnie", 
-              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-dzicczyznie",
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-dziczyznie",
             },
           ]
         },
