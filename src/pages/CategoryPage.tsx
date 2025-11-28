@@ -42,12 +42,17 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        const { data, error } = await supabase.functions.invoke('fetch-products', {
-          body: { kategoria: kategoria || '' }
-        });
+        // Build query string with category parameter
+        const queryParams = new URLSearchParams();
+        if (kategoria) {
+          queryParams.append('kategoria', kategoria);
+        }
+        
+        const { data, error } = await supabase.functions.invoke('fetch-products?' + queryParams.toString());
         
         if (error) throw error;
         
+        console.log('Fetched products for category:', kategoria, 'Count:', data?.length);
         setProducts(data || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
