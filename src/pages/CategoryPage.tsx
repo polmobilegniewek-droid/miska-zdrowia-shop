@@ -42,13 +42,9 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Build query string with category parameter
-        const queryParams = new URLSearchParams();
-        if (kategoria) {
-          queryParams.append('kategoria', kategoria);
-        }
-        
-        const { data, error } = await supabase.functions.invoke('fetch-products?' + queryParams.toString());
+        // Call edge function with query parameter
+        const url = kategoria ? `fetch-products?kategoria=${encodeURIComponent(kategoria)}` : 'fetch-products';
+        const { data, error } = await supabase.functions.invoke(url);
         
         if (error) throw error;
         
