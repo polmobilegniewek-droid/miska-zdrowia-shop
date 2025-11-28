@@ -92,12 +92,22 @@ const Header = () => {
   const buildCategoryTree = (products: any[], animalType: string): Category[] => {
     const categoryMap = new Map<string, Set<string>>();
 
+    console.log(`Building tree for ${animalType}, total products:`, products.length);
+    
+    // Count matching categories for debugging
+    let matchingCategoriesCount = 0;
+    
     products.forEach(product => {
+      if (!product.kategorie || !Array.isArray(product.kategorie)) {
+        return;
+      }
+      
       product.kategorie.forEach((cat: string) => {
         const normalizedCat = cat.trim();
         
-        // Check if category starts with animal type
-        if (normalizedCat.startsWith(animalType)) {
+        // Check if category starts with animal type (case-insensitive)
+        if (normalizedCat.toLowerCase().startsWith(animalType.toLowerCase())) {
+          matchingCategoriesCount++;
           const parts = normalizedCat.split('/').map(p => p.trim());
           
           // Build category hierarchy
@@ -117,6 +127,9 @@ const Header = () => {
         }
       });
     });
+
+    console.log(`Found ${matchingCategoriesCount} matching categories for ${animalType}`);
+    console.log('Category map keys:', Array.from(categoryMap.keys()));
 
     // Convert map to category structure
     const rootCategories: Category[] = [];
