@@ -265,23 +265,27 @@ serve(async (req) => {
       console.log(`Filtering by category path: ${categoryPath}`);
       
       // Convert URL path (e.g., "psy/sucha-karma") to match XML structure (e.g., "Psy / Sucha karma")
-      // Split by "/" and reconstruct with proper casing and spacing
+      // Split by "/" and reconstruct with proper casing: first letter uppercase, rest lowercase for each segment
       const pathParts = categoryPath.split('/').map(part => {
-        // Convert kebab-case to Title Case with spaces
-        return part
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
+        // Convert kebab-case to space-separated words with first letter uppercase
+        const words = part.split('-');
+        // Capitalize only the first letter of the first word, rest stays lowercase
+        return words.map((word, idx) => {
+          if (idx === 0) {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }
+          return word.toLowerCase();
+        }).join(' ');
       });
       
-      // Build the category prefix to match against (e.g., "Psy / Sucha Karma")
+      // Build the category prefix to match against (e.g., "Psy / Sucha karma")
       const categoryPrefix = pathParts.join(' / ');
       console.log(`Looking for categories starting with: "${categoryPrefix}"`);
       
       products = products.filter(product => {
         return product.kategorie.some(cat => {
-          // Check if any product category starts with our prefix
-          const matches = cat.startsWith(categoryPrefix);
+          // Check if any product category starts with our prefix (case-insensitive)
+          const matches = cat.toLowerCase().startsWith(categoryPrefix.toLowerCase());
           if (matches) {
             console.log(`Match found: "${cat}" starts with "${categoryPrefix}"`);
           }
