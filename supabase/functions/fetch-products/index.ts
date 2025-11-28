@@ -262,12 +262,30 @@ serve(async (req) => {
     // Filter by category if requested
     if (kategoria) {
       const categoryPath = decodeURIComponent(kategoria);
-      console.log(`Filtering by category: ${categoryPath}`);
+      console.log(`Filtering by category path: ${categoryPath}`);
+      
+      // Convert URL path (e.g., "psy/sucha-karma") to match XML structure (e.g., "Psy / Sucha karma")
+      // Split by "/" and reconstruct with proper casing and spacing
+      const pathParts = categoryPath.split('/').map(part => {
+        // Convert kebab-case to Title Case with spaces
+        return part
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      });
+      
+      // Build the category prefix to match against (e.g., "Psy / Sucha Karma")
+      const categoryPrefix = pathParts.join(' / ');
+      console.log(`Looking for categories starting with: "${categoryPrefix}"`);
       
       products = products.filter(product => {
         return product.kategorie.some(cat => {
-          const normalizedCat = cat.toLowerCase().replace(/\s+/g, '-');
-          return normalizedCat.includes(categoryPath.toLowerCase().replace(/\//g, '-'));
+          // Check if any product category starts with our prefix
+          const matches = cat.startsWith(categoryPrefix);
+          if (matches) {
+            console.log(`Match found: "${cat}" starts with "${categoryPrefix}"`);
+          }
+          return matches;
         });
       });
       
