@@ -94,9 +94,6 @@ const Header = () => {
 
     console.log(`Building tree for ${animalType}, total products:`, products.length);
     
-    // Count matching categories for debugging
-    let matchingCategoriesCount = 0;
-    
     products.forEach(product => {
       if (!product.kategorie || !Array.isArray(product.kategorie)) {
         return;
@@ -107,18 +104,17 @@ const Header = () => {
         
         // Check if category starts with animal type (case-insensitive)
         if (normalizedCat.toLowerCase().startsWith(animalType.toLowerCase())) {
-          matchingCategoriesCount++;
           const parts = normalizedCat.split('/').map(p => p.trim());
           
-          // Build category hierarchy
+          // Build complete category hierarchy - store all paths
           for (let i = 1; i < parts.length; i++) {
-            const parentPath = parts.slice(0, i + 1).join('/');
             const key = parts.slice(0, i + 1).join('/');
             
             if (!categoryMap.has(key)) {
               categoryMap.set(key, new Set());
             }
             
+            // Add child if exists
             if (i < parts.length - 1) {
               const childPath = parts.slice(0, i + 2).join('/');
               categoryMap.get(key)?.add(childPath);
@@ -128,61 +124,61 @@ const Header = () => {
       });
     });
 
-    console.log(`Found ${matchingCategoriesCount} matching categories for ${animalType}`);
-    console.log('Category map keys:', Array.from(categoryMap.keys()));
+    console.log('Category map for', animalType, ':', Array.from(categoryMap.keys()).slice(0, 10));
 
-    // Convert map to category structure
+    // Helper to create slug
+    const createSlug = (text: string) => text.toLowerCase()
+      .replace(/\s+/g, '-')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Build tree recursively
+    const buildSubcategories = (parentPath: string, level: number): Subcategory[] => {
+      const children = categoryMap.get(parentPath);
+      if (!children || children.size === 0) return [];
+
+      const subcats: Subcategory[] = [];
+      const parentParts = parentPath.split('/').map(p => p.trim());
+      const animalPrefix = animalType.toLowerCase();
+
+      children.forEach(childPath => {
+        const childParts = childPath.split('/').map(p => p.trim());
+        if (childParts.length !== parentParts.length + 1) return;
+
+        const label = childParts[childParts.length - 1];
+        const slugs = childParts.slice(1).map(createSlug);
+        const href = `/kategoria/${animalPrefix}/${slugs.join('/')}`;
+        
+        const grandChildren = buildSubcategories(childPath, level + 1);
+        
+        // Convert Subcategory[] to CategoryItem[] for compatibility
+        const items: CategoryItem[] = grandChildren.map(gc => ({
+          label: gc.label,
+          href: gc.href || ''
+        }));
+
+        subcats.push({
+          label,
+          href: items.length === 0 ? href : undefined,
+          hasSubItems: items.length > 0,
+          items
+        });
+      });
+
+      return subcats;
+    };
+
+    // Build root categories
     const rootCategories: Category[] = [];
     const animalPrefix = animalType.toLowerCase();
 
     categoryMap.forEach((children, path) => {
       const parts = path.split('/').map(p => p.trim());
       
-      if (parts.length === 2) { // Root level categories (e.g., "Psy/Sucha karma")
+      // Root level (e.g., "Psy/Sucha karma")
+      if (parts.length === 2 && parts[0].toLowerCase() === animalType.toLowerCase()) {
         const categoryLabel = parts[1];
-        const categorySlug = categoryLabel.toLowerCase()
-          .replace(/\s+/g, '-')
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        
-        const subcategories: Subcategory[] = [];
-        
-        // Find subcategories
-        children.forEach(childPath => {
-          const childParts = childPath.split('/').map(p => p.trim());
-          if (childParts.length === 3) {
-            const subLabel = childParts[2];
-            const subSlug = subLabel.toLowerCase()
-              .replace(/\s+/g, '-')
-              .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            
-            const subChildren = categoryMap.get(childPath);
-            const items: CategoryItem[] = [];
-            
-            if (subChildren && subChildren.size > 0) {
-              subChildren.forEach(subChildPath => {
-                const subChildParts = subChildPath.split('/').map(p => p.trim());
-                if (subChildParts.length === 4) {
-                  const itemLabel = subChildParts[3];
-                  const itemSlug = itemLabel.toLowerCase()
-                    .replace(/\s+/g, '-')
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                  
-                  items.push({
-                    label: itemLabel,
-                    href: `/kategoria/${animalPrefix}/${categorySlug}/${subSlug}/${itemSlug}`
-                  });
-                }
-              });
-            }
-            
-            subcategories.push({
-              label: subLabel,
-              href: items.length === 0 ? `/kategoria/${animalPrefix}/${categorySlug}/${subSlug}` : undefined,
-              hasSubItems: items.length > 0,
-              items
-            });
-          }
-        });
+        const categorySlug = createSlug(categoryLabel);
+        const subcategories = buildSubcategories(path, 2);
         
         rootCategories.push({
           label: categoryLabel,
