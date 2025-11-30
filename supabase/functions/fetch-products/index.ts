@@ -284,10 +284,14 @@ serve(async (req) => {
       
       products = products.filter(product => {
         return product.kategorie.some(cat => {
-          // Check if any product category starts with our prefix (case-insensitive)
-          const matches = cat.toLowerCase().startsWith(categoryPrefix.toLowerCase());
+          // Check if any product category matches our prefix:
+          // 1. Exact match: "Psy / Sucha karma"
+          // 2. Starts with prefix + " / ": "Psy / Sucha karma / Karma wg. smaku"
+          const catLower = cat.toLowerCase();
+          const prefixLower = categoryPrefix.toLowerCase();
+          const matches = catLower === prefixLower || catLower.startsWith(prefixLower + ' / ');
           if (matches) {
-            console.log(`Match found: "${cat}" starts with "${categoryPrefix}"`);
+            console.log(`Match found: "${cat}" matches "${categoryPrefix}"`);
           }
           return matches;
         });
