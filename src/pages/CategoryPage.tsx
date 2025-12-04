@@ -28,13 +28,68 @@ const CategoryPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
+  // Funkcja do normalizacji tekstu kategorii (usuwa polskie znaki, konwertuje na kebab-case)
+  const normalizeCategory = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // usuwa akcenty
+      .replace(/ł/g, 'l')
+      .replace(/ó/g, 'o')
+      .replace(/ą/g, 'a')
+      .replace(/ę/g, 'e')
+      .replace(/ś/g, 's')
+      .replace(/ć/g, 'c')
+      .replace(/ź/g, 'z')
+      .replace(/ż/g, 'z')
+      .replace(/ń/g, 'n')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
+  // Funkcja sprawdzająca czy produkt pasuje do kategorii
+  const productMatchesCategory = (product: Product & { kategorie_xml?: string }, categoryPath: string): boolean => {
+    if (!product.kategorie_xml || !categoryPath) return false;
+    
+    // Rozbij ścieżkę kategorii URL na segmenty
+    const urlSegments = categoryPath.split('/').filter(Boolean);
+    
+    // Rozbij kategorie_xml na poszczególne ścieżki kategorii
+    const xmlCategories = product.kategorie_xml.split(' || ');
+    
+    // Sprawdź każdą ścieżkę kategorii z XML
+    for (const xmlCategory of xmlCategories) {
+      // Rozbij ścieżkę XML na segmenty (np. "Koty / Sucha karma" -> ["Koty", "Sucha karma"])
+      const xmlSegments = xmlCategory.split(' / ').map(s => s.trim());
+      
+      // Normalizuj segmenty XML
+      const normalizedXmlSegments = xmlSegments.map(normalizeCategory);
+      
+      // Sprawdź czy ścieżka URL pasuje do początku ścieżki XML
+      let matches = true;
+      for (let i = 0; i < urlSegments.length; i++) {
+        const normalizedUrlSegment = normalizeCategory(urlSegments[i]);
+        if (i >= normalizedXmlSegments.length || normalizedXmlSegments[i] !== normalizedUrlSegment) {
+          matches = false;
+          break;
+        }
+      }
+      
+      if (matches) return true;
+    }
+    
+    return false;
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        // Dodajemy parametr `kategoria` do URL
+        // Pobieramy produkty z API
         const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
         if (!response.ok) {
@@ -42,7 +97,15 @@ const CategoryPage = () => {
         }
         
         const data = await response.json();
-        setProducts(data);
+        
+        // Filtrujemy produkty po stronie klienta dla dokładniejszego dopasowania
+        const filteredProducts = kategoria 
+          ? data.filter((product: Product & { kategorie_xml?: string }) => 
+              productMatchesCategory(product, kategoria)
+            )
+          : data;
+        
+        setProducts(filteredProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
       } finally {
@@ -51,7 +114,6 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
-    // Dodajemy kategoria do tablicy zależności
   }, [kategoria]);
 
   return (
