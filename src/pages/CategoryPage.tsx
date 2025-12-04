@@ -18,6 +18,7 @@ interface Product {
   cena_netto: string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
+  kategorie_xml?: string;
 }
 
 const CategoryPage = () => {
@@ -50,14 +51,21 @@ const CategoryPage = () => {
   };
 
   // Funkcja sprawdzająca czy produkt pasuje do kategorii
-  const productMatchesCategory = (product: Product & { kategorie_xml?: string }, categoryPath: string): boolean => {
-    if (!product.kategorie_xml || !categoryPath) return false;
+  const productMatchesCategory = (product: Product, categoryPath: string): boolean => {
+    if (!product.kategorie_xml || !categoryPath) {
+      console.log(`[Filter] Produkt ${product.sku} - brak kategorie_xml lub categoryPath`);
+      return false;
+    }
     
     // Rozbij ścieżkę kategorii URL na segmenty
     const urlSegments = categoryPath.split('/').filter(Boolean);
     
     // Rozbij kategorie_xml na poszczególne ścieżki kategorii
     const xmlCategories = product.kategorie_xml.split(' || ');
+    
+    console.log(`[Filter] Sprawdzam produkt: ${product.sku}`);
+    console.log(`[Filter] URL segments: ${JSON.stringify(urlSegments)}`);
+    console.log(`[Filter] XML categories: ${JSON.stringify(xmlCategories)}`);
     
     // Sprawdź każdą ścieżkę kategorii z XML
     for (const xmlCategory of xmlCategories) {
@@ -67,19 +75,29 @@ const CategoryPage = () => {
       // Normalizuj segmenty XML
       const normalizedXmlSegments = xmlSegments.map(normalizeCategory);
       
-      // Sprawdź czy ścieżka URL pasuje do początku ścieżki XML
+      // Sprawdź czy ścieżka URL pasuje DOKŁADNIE do ścieżki XML (nie tylko prefix)
+      // Dla dokładnego dopasowania: długość musi być taka sama lub URL jest prefixem
+      if (urlSegments.length > normalizedXmlSegments.length) {
+        continue; // URL jest dłuższy niż ścieżka XML, pomiń
+      }
+      
       let matches = true;
       for (let i = 0; i < urlSegments.length; i++) {
         const normalizedUrlSegment = normalizeCategory(urlSegments[i]);
-        if (i >= normalizedXmlSegments.length || normalizedXmlSegments[i] !== normalizedUrlSegment) {
+        console.log(`[Filter] Porównuję: URL "${normalizedUrlSegment}" vs XML "${normalizedXmlSegments[i]}"`);
+        if (normalizedXmlSegments[i] !== normalizedUrlSegment) {
           matches = false;
           break;
         }
       }
       
-      if (matches) return true;
+      if (matches) {
+        console.log(`[Filter] ✓ Produkt ${product.sku} pasuje do kategorii ${categoryPath}`);
+        return true;
+      }
     }
     
+    console.log(`[Filter] ✗ Produkt ${product.sku} NIE pasuje do kategorii ${categoryPath}`);
     return false;
   };
 
@@ -98,13 +116,14 @@ const CategoryPage = () => {
         
         const data = await response.json();
         
+        console.log(`[API] Pobrano ${data.length} produktów z API dla kategorii: ${kategoria}`);
+        
         // Filtrujemy produkty po stronie klienta dla dokładniejszego dopasowania
         const filteredProducts = kategoria 
-          ? data.filter((product: Product & { kategorie_xml?: string }) => 
-              productMatchesCategory(product, kategoria)
-            )
+          ? data.filter((product: Product) => productMatchesCategory(product, kategoria))
           : data;
         
+        console.log(`[API] Po filtracji pozostało ${filteredProducts.length} produktów`);
         setProducts(filteredProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
