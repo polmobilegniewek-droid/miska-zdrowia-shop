@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Star } from "lucide-react";
+
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
