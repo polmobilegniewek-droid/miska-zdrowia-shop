@@ -2,11 +2,10 @@ import { ShoppingCart, User, Search, Menu, X, Minus, Plus, Trash2, ChevronRight 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
-import { supabase } from "@/integrations/supabase/client";
 import placeholderImage from "/placeholder.svg";
 import {
   NavigationMenu,
@@ -53,143 +52,443 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [dogCategories, setDogCategories] = useState<Category[]>([]);
-  const [catCategories, setCatCategories] = useState<Category[]>([]);
   const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
 
-  // Fetch and build categories from products
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('fetch-products');
-        
-        if (error) {
-          console.error('Error fetching products:', error);
-          throw error;
-        }
-        
-        console.log('Fetched products:', data?.slice(0, 2)); // Log first 2 products
-        const products = data as any[];
-        
-        // Build category tree from product categories
-        const dogCats = buildCategoryTree(products, 'Psy');
-        const catCats = buildCategoryTree(products, 'Koty');
-        
-        console.log('Dog categories built:', dogCats);
-        console.log('Cat categories built:', catCats);
-        
-        setDogCategories(dogCats);
-        setCatCategories(catCats);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
+  const dogCategories = [
+    {
+      label: "Sucha karma",
+      href: "/kategoria/psy/sucha-karma",
+      subcategories: [
+        {
+          label: "Karma wg. smaku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Bez kurczaka", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/bez-kurczaka",
+            },
+            { 
+              label: "Oparta na kurczaku", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-kurczaku",
+            },
+            { 
+              label: "Oparta na króliku", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-kroliku",
+            },
+            { 
+              label: "Oparta na indyku", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-indyku",
+            },
+            { 
+              label: "Oparta na wołowinie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-wolowinie",
+            },
+            { 
+              label: "Oparta na jagnięcinie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-jagniecinie",
+            },
+            { 
+              label: "Oparta na wieprzowinie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-wieprzowinie",
+            },
+            { 
+              label: "Oparta na rybie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-rybie",
+            },
+            { 
+              label: "Oparta na dziczyźnie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-smaku/oparta-na-dziczyznie",
+            },
+          ]
+        },
+        {
+          label: "Karma wg. wieku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Dla szczeniąt", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wieku/dla-szczeniat",
+            },
+            { 
+              label: "Psy dorosłe", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wieku/psy-dorosle",
+            },
+            { 
+              label: "Dla seniora", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wieku/dla-seniora",
+            },
+          ]
+        },
+        {
+          label: "Karma wg. wielkości",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Rasy małe", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-male",
+            },
+            { 
+              label: "Rasy średnie", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-srednie",
+            },
+            { 
+              label: "Rasy duże", 
+              href: "/kategoria/psy/sucha-karma/karma-wg-wielkosci/rasy-duze",
+            },
+          ]
+        },
+        {
+          label: "Bezzbożowa",
+          href: "/kategoria/psy/sucha-karma/bezbozowa",
+          items: []
+        },
+        {
+          label: "Karma Light/Senior",
+          href: "/kategoria/psy/sucha-karma/karma-light-senior",
+          items: []
+        },
+      ]
+    },
+    {
+      label: "Mokra karma",
+      href: "/kategoria/psy/mokra-karma",
+      subcategories: [
+        {
+          label: "Puszki 400g",
+          href: "/kategoria/psy/mokra-karma/puszki-400g",
+          items: []
+        },
+        {
+          label: "Puszki 800g+",
+          href: "/kategoria/psy/mokra-karma/puszki-800g",
+          items: []
+        },
+        {
+          label: "Saszetki",
+          href: "/kategoria/psy/mokra-karma/saszetki",
+          items: []
+        },
+        {
+          label: "Zestawy",
+          href: "/kategoria/psy/mokra-karma/zestawy",
+          items: []
+        },
+      ]
+    },
+    {
+      label: "Przysmaki",
+      href: "/kategoria/psy/przysmaki",
+      subcategories: [
+        {
+          label: "Kości",
+          href: "/kategoria/psy/przysmaki/kosci",
+          items: []
+        },
+        {
+          label: "Do żucia",
+          href: "/kategoria/psy/przysmaki/do-zucia",
+          items: []
+        },
+        {
+          label: "Ciastka i łakocie",
+          href: "/kategoria/psy/przysmaki/ciastka-i-lakocie",
+          items: []
+        },
+        {
+          label: "Pozostałe",
+          href: "/kategoria/psy/przysmaki/pozostale",
+          items: []
+        },
+        {
+          label: "Treningowe",
+          href: "/kategoria/psy/przysmaki/treningowe",
+          items: []
+        },
+        {
+          label: "Naturalne i gryzaki",
+          href: "/kategoria/psy/przysmaki/naturalne-i-gryzaki",
+          items: []
+        },
+        {
+          label: "Półwilgotne",
+          href: "/kategoria/psy/przysmaki/polwilgotne",
+          items: []
+        },
+        {
+          label: "Zestawy",
+          href: "/kategoria/psy/przysmaki/zestawy",
+          items: []
+        },
+      ]
+    },
+    {
+      label: "Próbki karm",
+      href: "/kategoria/psy/probki-karm",
+      subcategories: []
+    },
+    {
+      label: "Akcesoria i zdrowie",
+      href: "/kategoria/psy/akcesoria-i-zdrowie",
+      subcategories: [
+        {
+          label: "Miski",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/miski",
+          items: []
+        },
+        {
+          label: "Legowiska dla psów",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/legowiska-dla-psow",
+          items: []
+        },
+        {
+          label: "Zabawki",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/zabawki",
+          items: []
+        },
+        {
+          label: "Smycze i szelki",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/smycze-i-szelki",
+          items: []
+        },
+        {
+          label: "Obroże i kagańce",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/obroze-i-kaganince",
+          items: []
+        },
+        {
+          label: "Szczotki i grzebienie",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/szczotki-i-grzebienie",
+          items: []
+        },
+        {
+          label: "Transportery",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/transportery",
+          items: []
+        },
+        {
+          label: "Podkłady higieniczne",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/podklady-higieniczne",
+          items: []
+        },
+        {
+          label: "Ubranka dla psa",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/ubranka-dla-psa",
+          items: []
+        },
+        {
+          label: "Gadżety",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/gadzety",
+          items: []
+        },
+        {
+          label: "Maty chłodzące",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/maty-chlodzace",
+          items: []
+        },
+        {
+          label: "Witaminy i suplementy",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/witaminy-i-suplementy",
+          items: []
+        },
+        {
+          label: "Szampony i ochrona",
+          href: "/kategoria/psy/akcesoria-i-zdrowie/szampony-i-ochrona",
+          items: []
+        },
+      ]
+    },
+  ];
 
-    fetchCategories();
-  }, []);
-
-  // Helper function to build category tree
-  const buildCategoryTree = (products: any[], animalType: string): Category[] => {
-    const categoryMap = new Map<string, Set<string>>();
-
-    console.log(`Building tree for ${animalType}, total products:`, products.length);
-    
-    products.forEach(product => {
-      if (!product.kategorie || !Array.isArray(product.kategorie)) {
-        return;
-      }
-      
-      product.kategorie.forEach((cat: string) => {
-        const normalizedCat = cat.trim();
-        
-        // Check if category starts with animal type (case-insensitive)
-        if (normalizedCat.toLowerCase().startsWith(animalType.toLowerCase())) {
-          const parts = normalizedCat.split('/').map(p => p.trim());
-          
-          // Build complete category hierarchy - store all paths
-          for (let i = 1; i < parts.length; i++) {
-            const key = parts.slice(0, i + 1).join('/');
-            
-            if (!categoryMap.has(key)) {
-              categoryMap.set(key, new Set());
-            }
-            
-            // Add child if exists
-            if (i < parts.length - 1) {
-              const childPath = parts.slice(0, i + 2).join('/');
-              categoryMap.get(key)?.add(childPath);
-            }
-          }
-        }
-      });
-    });
-
-    console.log('Category map for', animalType, ':', Array.from(categoryMap.keys()).slice(0, 10));
-
-    // Helper to create slug
-    const createSlug = (text: string) => text.toLowerCase()
-      .replace(/\s+/g, '-')
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-    // Build tree recursively
-    const buildSubcategories = (parentPath: string, level: number): Subcategory[] => {
-      const children = categoryMap.get(parentPath);
-      if (!children || children.size === 0) return [];
-
-      const subcats: Subcategory[] = [];
-      const parentParts = parentPath.split('/').map(p => p.trim());
-      const animalPrefix = animalType.toLowerCase();
-
-      children.forEach(childPath => {
-        const childParts = childPath.split('/').map(p => p.trim());
-        if (childParts.length !== parentParts.length + 1) return;
-
-        const label = childParts[childParts.length - 1];
-        const slugs = childParts.slice(1).map(createSlug);
-        const href = `/kategoria/${animalPrefix}/${slugs.join('/')}`;
-        
-        const grandChildren = buildSubcategories(childPath, level + 1);
-        
-        // Convert Subcategory[] to CategoryItem[] for compatibility
-        const items: CategoryItem[] = grandChildren.map(gc => ({
-          label: gc.label,
-          href: gc.href || ''
-        }));
-
-        subcats.push({
-          label,
-          href: items.length === 0 ? href : undefined,
-          hasSubItems: items.length > 0,
-          items
-        });
-      });
-
-      return subcats;
-    };
-
-    // Build root categories
-    const rootCategories: Category[] = [];
-    const animalPrefix = animalType.toLowerCase();
-
-    categoryMap.forEach((children, path) => {
-      const parts = path.split('/').map(p => p.trim());
-      
-      // Root level (e.g., "Psy/Sucha karma")
-      if (parts.length === 2 && parts[0].toLowerCase() === animalType.toLowerCase()) {
-        const categoryLabel = parts[1];
-        const categorySlug = createSlug(categoryLabel);
-        const subcategories = buildSubcategories(path, 2);
-        
-        rootCategories.push({
-          label: categoryLabel,
-          href: `/kategoria/${animalPrefix}/${categorySlug}`,
-          subcategories
-        });
-      }
-    });
-
-    return rootCategories;
-  };
+  const catCategories = [
+    {
+      label: "Sucha karma",
+      href: "/kategoria/koty/sucha-karma",
+      subcategories: [
+        {
+          label: "Karma wg. smaku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Bez kurczaka", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/bez-kurczaka",
+            },
+            { 
+              label: "Oparta na kurczaku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-kurczaku",
+            },
+            { 
+              label: "Oparta na króliku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-kroliku",
+            },
+            { 
+              label: "Oparta na indyku", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-indyku",
+            },
+            { 
+              label: "Oparta na wołowinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-wolowinie",
+            },
+            { 
+              label: "Oparta na jagnięcinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-jagniecinie",
+            },
+            { 
+              label: "Oparta na wieprzowinie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-wieprzowinie",
+            },
+            { 
+              label: "Oparta na rybie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-rybie",
+            },
+            { 
+              label: "Oparta na dziczyźnie", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-smaku/oparta-na-dziczyznie",
+            },
+          ]
+        },
+        {
+          label: "Karma wg. wieku",
+          hasSubItems: true,
+          items: [
+            { 
+              label: "Dla kociąt", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/dla-kociat",
+            },
+            { 
+              label: "Koty dorosłe", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/koty-dorosle",
+            },
+            { 
+              label: "Dla seniora", 
+              href: "/kategoria/koty/sucha-karma/karma-wg-wieku/dla-seniora",
+            },
+          ]
+        },
+        {
+          label: "Bezzbożowa",
+          href: "/kategoria/koty/sucha-karma/bezbozowa",
+          items: []
+        },
+        {
+          label: "Karma Light/Senior",
+          href: "/kategoria/koty/sucha-karma/karma-light-senior",
+          items: []
+        },
+      ]
+    },
+    {
+      label: "Mokra karma dla kota",
+      href: "/kategoria/koty/mokra-karma-dla-kota",
+      subcategories: [
+        {
+          label: "Puszki",
+          href: "/kategoria/koty/mokra-karma-dla-kota/puszki",
+          items: []
+        },
+        {
+          label: "Saszetki",
+          href: "/kategoria/koty/mokra-karma-dla-kota/saszetki",
+          items: []
+        },
+        {
+          label: "Zestawy",
+          href: "/kategoria/koty/mokra-karma-dla-kota/zestawy",
+          items: []
+        },
+      ]
+    },
+    {
+      label: "Przysmaki",
+      href: "/kategoria/koty/przysmaki",
+      subcategories: []
+    },
+    {
+      label: "Zestawy",
+      href: "/kategoria/koty/zestawy",
+      subcategories: []
+    },
+    {
+      label: "Próbki karm",
+      href: "/kategoria/koty/probki-karm",
+      subcategories: []
+    },
+    {
+      label: "Akcesoria i suplementy",
+      href: "/kategoria/koty/akcesoria-i-suplementy",
+      subcategories: [
+        {
+          label: "Miski",
+          href: "/kategoria/koty/akcesoria-i-suplementy/miski",
+          items: []
+        },
+        {
+          label: "Żwirek dla kota",
+          href: "/kategoria/koty/akcesoria-i-suplementy/zwirki",
+          items: []
+        },
+        {
+          label: "Kuwety",
+          href: "/kategoria/koty/akcesoria-i-suplementy/kuwety",
+          items: []
+        },
+        {
+          label: "Legowiska",
+          href: "/kategoria/koty/akcesoria-i-suplementy/legowiska",
+          items: []
+        },
+        {
+          label: "Zabawki",
+          href: "/kategoria/koty/akcesoria-i-suplementy/zabawki",
+          items: []
+        },
+        {
+          label: "Transportery",
+          href: "/kategoria/koty/akcesoria-i-suplementy/transportery",
+          items: []
+        },
+        {
+          label: "Szczotki i grzebienie",
+          href: "/kategoria/koty/akcesoria-i-suplementy/szczotki-i-grzebienie",
+          items: []
+        },
+        {
+          label: "Smycze i szelki",
+          href: "/kategoria/koty/akcesoria-i-suplementy/smycze-i-szelki",
+          items: []
+        },
+        {
+          label: "Obroże",
+          href: "/kategoria/koty/akcesoria-i-suplementy/obroze",
+          items: []
+        },
+        {
+          label: "Siatki",
+          href: "/kategoria/koty/akcesoria-i-suplementy/siatki",
+          items: []
+        },
+        {
+          label: "Drapaki",
+          href: "/kategoria/koty/akcesoria-i-suplementy/drapaki",
+          items: []
+        },
+        {
+          label: "Gadżety",
+          href: "/kategoria/koty/akcesoria-i-suplementy/gadzety",
+          items: []
+        },
+        {
+          label: "Witaminy i suplementy",
+          href: "/kategoria/koty/akcesoria-i-suplementy/witaminy-i-suplementy",
+          items: []
+        },
+        {
+          label: "Szampony i ochrona",
+          href: "/kategoria/koty/akcesoria-i-suplementy/szampony-i-ochrona",
+          items: []
+        },
+      ]
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">

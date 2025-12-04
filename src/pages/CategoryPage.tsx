@@ -9,7 +9,6 @@ import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { supabase } from "@/integrations/supabase/client";
 import placeholderImage from "/placeholder.svg";
 
 interface Product {
@@ -19,14 +18,7 @@ interface Product {
   cena_netto: string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
-  aktywny: boolean;
-  min_order?: string;
 }
-
-const calculateBrutto = (netto: string): number => {
-  const nettoPrice = parseFloat(netto);
-  return nettoPrice * 1.08; // VAT 8% dla karmy
-};
 
 const CategoryPage = () => {
   const { '*': kategoria } = useParams();
@@ -42,14 +34,15 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Call edge function with query parameter
-        const url = kategoria ? `fetch-products?kategoria=${encodeURIComponent(kategoria)}` : 'fetch-products';
-        const { data, error } = await supabase.functions.invoke(url);
+        // Dodajemy parametr `kategoria` do URL
+        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
-        if (error) throw error;
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać produktów');
+        }
         
-        console.log('Fetched products for category:', kategoria, 'Count:', data?.length);
-        setProducts(data || []);
+        const data = await response.json();
+        setProducts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
       } finally {
@@ -58,6 +51,7 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
+    // Dodajemy kategoria do tablicy zależności
   }, [kategoria]);
 
   return (
@@ -184,19 +178,10 @@ const CategoryPage = () => {
                           {product.opis && (
                             <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
                           )}
-                          <div className="space-y-1">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-2xl font-bold text-foreground">
-                                {calculateBrutto(product.cena_netto).toFixed(2)} zł
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              (netto: {parseFloat(product.cena_netto).toFixed(2)} zł)
-                            </p>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Na stanie: {parseInt(product.stan_magazynowy) > 0 ? `${product.stan_magazynowy} szt.` : 'Brak'}
-                          </p>
+                          <p className="text-sm text-muted-foreground">Na stanie: {product.stan_magazynowy} szt.</p>
                         </CardContent>
                       </Link>
                       <CardFooter className="p-4 pt-0">
@@ -207,7 +192,7 @@ const CategoryPage = () => {
                             id: product.sku,
                             sku: product.sku,
                             name: product.nazwa,
-                            price: calculateBrutto(product.cena_netto),
+                            price: parseFloat(product.cena_netto),
                             image: product.url_zdjecia || placeholderImage,
                           })}
                         >
