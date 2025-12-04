@@ -10,58 +10,45 @@ const corsHeaders = {
 const APILO_API_URL = "https://miskazdrowia.apilo.com";
 const CLIENT_ID = "1";
 const CLIENT_SECRET = "abc4f0b2-1b0e-5cf2-958b-0d5260625596";
-const AUTH_CODE = "9006ebb2-282c-5827-9672-b7a35692f044";
 
-// Cache for access token
-let cachedToken: string | null = null;
-let tokenExpiry: number = 0;
+// Access token generated on 2024-12-04, expires 2025-12-25
+const ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NjQ4NjIyOTgsImlzcyI6Im1pc2themRyb3dpYS5hcGlsby5jb20iLCJleHAiOjE3NjY2NzY2OTgsImp0aSI6ImE3NjczODhhLTY0N2EtNTQ4ZC05MjZiLTMzMTEzNjNkNzlmMyIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOjEsInBsYXRmb3JtX2lkIjo0fQ.rOY_R-F5MHPcN7eRGPysGMIIB56-wC3wIzOEDMj2jnRG6tSkUrtUtOIBVfzAoIkpyqd-O2mbnVVqFi-MnldA-3Qr8JHBSXYDWJej6Ycy5F1yNYtNs3u0nEMGNYWHJQJkeZhDk9Eggd4zN5rE1D-y3iT1fr4AsZPTUIxKNEwrmRqUpKnI94FOq5hlcPjkM2DBifFzeSKLsnXUjEY3qOepuJxj3jkRfh9mvhko_K2mlMsqE3G_-3kyD8gv1fuy0V25K5HdxD2GDsl4O1hMMlBAPJurt3ahK6sh4Dw5znPn6I5cO52aT6hNhF8PrGN1mzC3aVGGeTMRWm-U-l1uIv50U1gBCQjynvmNeX_XMoa5dqKy_K4ZyGCXbshIOYCrfl5lwcpfZEBAnBW6EIp1iSPcqwffFrLpMA0wDeT3OB8cAxvu_0U7rjyT0JnQlc9h0AV5UTuPZK6Aw_B4LCDn9mIrH5cAwLObOVSutV6hVFp1meEtZ9n_e4srwe097ZlT5J6arD6-mhHo0m-mbWqf2n3Nf61PLFdt1Ay6iAsz0yW21q221dkhY3PRQR4AgTGUJa-g0uFBKKJkNaRoIya_PKAB2u0AlE5wa9v05tQNX1ehR-SE2zPf2LwQk8TzCDWen4q9yZSa7pLinaBI4GrGbZS3GfL3lpYuz6v1YOEUPYqJhOw";
 
-async function getAccessToken(): Promise<string> {
-  // Return cached token if still valid
-  if (cachedToken && Date.now() < tokenExpiry) {
-    console.log('[apilo-proxy] Using cached token');
-    return cachedToken;
-  }
+// Refresh token for when access token expires
+const REFRESH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NjQ4NjIyOTgsImlzcyI6Im1pc2themRyb3dpYS5hcGlsby5jb20iLCJleHAiOjE3NzAyMTkwOTgsImp0aSI6IjQ1MDRjYmZhLWE0MzItNTBlNS05NzA3LTM0OTliZTg5YjM5MSIsInR5cGUiOiJyZWZyZXNoX3Rva2VuIiwiY2xpZW50X2lkIjoxLCJwbGF0Zm9ybV9pZCI6NH0.ukQxQLHDsS-8zwFy0kl8bsgX26xRBkjvk4BNBpW_ormHAfon4eyMJ1WhWRRf0SOfcOsNymL3dPPXsLfjECjpuVmHssPsFwekx_K_STLhM926t8phCVH_x4VxUFmNU9p0iqTPtlhBj_ECvVyNiFKYUjruujDpBsXENTrwJsG40IUujRbxkEQlFVMsqFNM_BPOdN0AibgIq90l-Yp1Uip1IYcv1kEkgy4w2ZKFcTmVYV6JQbCHsw4kTddDqALkWk1GQAcVfQnPt4qXvmqo_jCPUw1qHTf4mLTO_ZDGLKWiXL_mxBqzZJzFwNZNXVt79RrXjICF70VQHIjQo3Rl_JKqoVfkmSB_t1kaeSHE4msQ1JAzdwngzvCDEUao3qTLZcVe4nNDWH5UDUYDeLIeZZ7ksDieLR8ieZ_j1K-VyvOrKV9nzetplg2EkNZbAJReoG6mVdPeqj8GFdadjlmT8pv_bZrI_Br_bCWew3K_dmpQc2Oq2Q8MPWMb4oaypDDRROZHPAARuJD7wR4bgNsDF2xZ84A1Lc_JHAWdj_aWN3h5u7Cch1sruBfQCqDaeohuBbNnfrLVVOgupPq9qf9ZatlTTTnePsEcgfWH5-QQ-6qdWh5vCiGZ2enQFLh2Xs-UFvMr9gLlMWT4jobvFhaDsIXwWX4OlAeq0x3Ff1ckuALhZjk";
 
-  console.log('[apilo-proxy] Getting new access token via OAuth...');
+// Token cache
+let currentAccessToken = ACCESS_TOKEN;
+
+async function refreshAccessToken(): Promise<string> {
+  console.log('[apilo-proxy] Refreshing access token...');
   
-  // Try OAuth token endpoint
-  const tokenUrl = `${APILO_API_URL}/oauth/token`;
-  
-  const params = new URLSearchParams({
-    grant_type: 'authorization_code',
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    code: AUTH_CODE,
-  });
-
-  console.log(`[apilo-proxy] Token request to: ${tokenUrl}`);
+  const tokenUrl = `${APILO_API_URL}/rest/auth/token/`;
+  const basicAuth = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
 
   const response = await fetch(tokenUrl, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${basicAuth}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
-    body: params.toString(),
+    body: JSON.stringify({
+      grantType: 'refresh_token',
+      token: REFRESH_TOKEN,
+    }),
   });
 
-  const responseText = await response.text();
-  console.log(`[apilo-proxy] Token response status: ${response.status}`);
-  console.log(`[apilo-proxy] Token response: ${responseText}`);
-
   if (!response.ok) {
-    throw new Error(`OAuth error: ${response.status} - ${responseText}`);
+    const errorText = await response.text();
+    console.error(`[apilo-proxy] Token refresh failed: ${response.status} - ${errorText}`);
+    throw new Error(`Token refresh failed: ${response.status}`);
   }
 
-  const data = JSON.parse(responseText);
-  cachedToken = data.access_token;
-  
-  // Set expiry (default 21 days if not provided, minus 1 hour buffer)
-  const expiresIn = data.expires_in || (21 * 24 * 60 * 60);
-  tokenExpiry = Date.now() + (expiresIn - 3600) * 1000;
-  
-  console.log(`[apilo-proxy] Got access token, expires in ${expiresIn}s`);
-  return cachedToken!;
+  const data = await response.json();
+  currentAccessToken = data.accessToken;
+  console.log('[apilo-proxy] Access token refreshed successfully');
+  return currentAccessToken;
 }
 
 serve(async (req) => {
@@ -88,11 +75,8 @@ serve(async (req) => {
       }
     }
 
-    // Get access token
-    const accessToken = await getAccessToken();
-
     // Build Apilo API URL
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&page=${page}`;
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/products/?limit=${limit}&page=${page}`;
     
     // If SKU is provided, add filter
     if (sku) {
@@ -101,25 +85,36 @@ serve(async (req) => {
 
     console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
 
-    const response = await fetch(apiloEndpoint, {
+    let response = await fetch(apiloEndpoint, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${currentAccessToken}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     });
+
+    // If 401, try to refresh token and retry
+    if (response.status === 401) {
+      console.log('[apilo-proxy] Token expired, refreshing...');
+      try {
+        await refreshAccessToken();
+        response = await fetch(apiloEndpoint, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${currentAccessToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+      } catch (refreshError) {
+        console.error('[apilo-proxy] Token refresh failed:', refreshError);
+      }
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[apilo-proxy] Apilo API error: ${response.status} - ${errorText}`);
-      
-      // If 401, clear cached token and retry once
-      if (response.status === 401 && cachedToken) {
-        console.log('[apilo-proxy] Token expired, clearing cache...');
-        cachedToken = null;
-        tokenExpiry = 0;
-      }
-      
       return new Response(
         JSON.stringify({ error: `Apilo API error: ${response.status}`, details: errorText }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
