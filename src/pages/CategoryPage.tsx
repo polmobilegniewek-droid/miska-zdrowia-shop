@@ -5,11 +5,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+
 const placeholderImage = "/placeholder.svg";
 
 interface Product {
@@ -30,12 +30,11 @@ const CategoryPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
-  // Funkcja do normalizacji tekstu kategorii (usuwa polskie znaki, konwertuje na kebab-case)
   const normalizeCategory = (text: string): string => {
     return text
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // usuwa akcenty
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/ł/g, 'l')
       .replace(/ó/g, 'o')
       .replace(/ą/g, 'a')
@@ -51,41 +50,25 @@ const CategoryPage = () => {
       .replace(/^-|-$/g, '');
   };
 
-  // Funkcja sprawdzająca czy produkt pasuje do kategorii
   const productMatchesCategory = (product: Product, categoryPath: string): boolean => {
     if (!product.kategorie_xml || !categoryPath) {
-      console.log(`[Filter] Produkt ${product.sku} - brak kategorie_xml lub categoryPath`);
       return false;
     }
     
-    // Rozbij ścieżkę kategorii URL na segmenty
     const urlSegments = categoryPath.split('/').filter(Boolean);
-    
-    // Rozbij kategorie_xml na poszczególne ścieżki kategorii
     const xmlCategories = product.kategorie_xml.split(' || ');
     
-    console.log(`[Filter] Sprawdzam produkt: ${product.sku}`);
-    console.log(`[Filter] URL segments: ${JSON.stringify(urlSegments)}`);
-    console.log(`[Filter] XML categories: ${JSON.stringify(xmlCategories)}`);
-    
-    // Sprawdź każdą ścieżkę kategorii z XML
     for (const xmlCategory of xmlCategories) {
-      // Rozbij ścieżkę XML na segmenty (np. "Koty / Sucha karma" -> ["Koty", "Sucha karma"])
       const xmlSegments = xmlCategory.split(' / ').map(s => s.trim());
-      
-      // Normalizuj segmenty XML
       const normalizedXmlSegments = xmlSegments.map(normalizeCategory);
       
-      // Sprawdź czy ścieżka URL pasuje DOKŁADNIE do ścieżki XML (nie tylko prefix)
-      // Dla dokładnego dopasowania: długość musi być taka sama lub URL jest prefixem
       if (urlSegments.length > normalizedXmlSegments.length) {
-        continue; // URL jest dłuższy niż ścieżka XML, pomiń
+        continue;
       }
       
       let matches = true;
       for (let i = 0; i < urlSegments.length; i++) {
         const normalizedUrlSegment = normalizeCategory(urlSegments[i]);
-        console.log(`[Filter] Porównuję: URL "${normalizedUrlSegment}" vs XML "${normalizedXmlSegments[i]}"`);
         if (normalizedXmlSegments[i] !== normalizedUrlSegment) {
           matches = false;
           break;
@@ -93,12 +76,10 @@ const CategoryPage = () => {
       }
       
       if (matches) {
-        console.log(`[Filter] ✓ Produkt ${product.sku} pasuje do kategorii ${categoryPath}`);
         return true;
       }
     }
     
-    console.log(`[Filter] ✗ Produkt ${product.sku} NIE pasuje do kategorii ${categoryPath}`);
     return false;
   };
 
@@ -108,7 +89,6 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Pobieramy produkty z Apilo przez edge function
         const { data, error: invokeError } = await supabase.functions.invoke('apilo-proxy', {
           body: {},
         });
@@ -117,15 +97,12 @@ const CategoryPage = () => {
           throw new Error(invokeError.message || 'Nie udało się pobrać produktów');
         }
         
-        const products = data?.products || [];
-        console.log(`[API] Pobrano ${products.length} produktów z Apilo dla kategorii: ${kategoria}`);
+        const allProducts = data?.products || [];
         
-        // Filtrujemy produkty po stronie klienta dla dokładniejszego dopasowania
         const filteredProducts = kategoria 
-          ? products.filter((product: Product) => productMatchesCategory(product, kategoria))
-          : products;
+          ? allProducts.filter((product: Product) => productMatchesCategory(product, kategoria))
+          : allProducts;
         
-        console.log(`[API] Po filtracji pozostało ${filteredProducts.length} produktów`);
         setProducts(filteredProducts);
       } catch (err) {
         console.error('[CategoryPage] Error:', err);
@@ -143,7 +120,6 @@ const CategoryPage = () => {
       <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 md:px-6">
-          {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-2">
               {kategoria ? kategoria.replace(/-/g, ' ') : 'Produkty'}
@@ -151,16 +127,13 @@ const CategoryPage = () => {
             <p className="text-muted-foreground">Znaleziono {products.length} produktów</p>
           </div>
 
-          {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
             <aside className="lg:col-span-1">
               <div className="sticky top-20 space-y-6">
                 <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-lg font-semibold font-heading text-foreground mb-4">Filtry</h2>
                   
                   <Accordion type="multiple" defaultValue={["marka", "cena", "cechy"]} className="w-full">
-                    {/* Marka Filter */}
                     <AccordionItem value="marka">
                       <AccordionTrigger className="text-sm font-medium">Marka</AccordionTrigger>
                       <AccordionContent>
@@ -168,10 +141,7 @@ const CategoryPage = () => {
                           {["PetNature", "HealthyPet", "VetDiet", "NaturalChoice"].map((brand) => (
                             <div key={brand} className="flex items-center space-x-2">
                               <Checkbox id={brand} />
-                              <label
-                                htmlFor={brand}
-                                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-                              >
+                              <label htmlFor={brand} className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                                 {brand}
                               </label>
                             </div>
@@ -180,19 +150,11 @@ const CategoryPage = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Cena Filter */}
                     <AccordionItem value="cena">
                       <AccordionTrigger className="text-sm font-medium">Cena</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4 pt-2">
-                          <Slider
-                            min={0}
-                            max={500}
-                            step={10}
-                            value={priceRange}
-                            onValueChange={setPriceRange}
-                            className="w-full"
-                          />
+                          <Slider min={0} max={500} step={10} value={priceRange} onValueChange={setPriceRange} className="w-full" />
                           <div className="flex items-center justify-between text-sm text-muted-foreground">
                             <span>{priceRange[0]} zł</span>
                             <span>{priceRange[1]} zł</span>
@@ -201,7 +163,6 @@ const CategoryPage = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Cechy Filter */}
                     <AccordionItem value="cechy">
                       <AccordionTrigger className="text-sm font-medium">Cechy</AccordionTrigger>
                       <AccordionContent>
@@ -209,10 +170,7 @@ const CategoryPage = () => {
                           {["Bezzbożowa", "Hipoalergiczna", "Dla seniora", "Naturalna", "Bio"].map((feature) => (
                             <div key={feature} className="flex items-center space-x-2">
                               <Checkbox id={feature} />
-                              <label
-                                htmlFor={feature}
-                                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-                              >
+                              <label htmlFor={feature} className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                                 {feature}
                               </label>
                             </div>
@@ -229,7 +187,6 @@ const CategoryPage = () => {
               </div>
             </aside>
 
-            {/* Products Grid */}
             <div className="lg:col-span-3">
               {isLoading && (
                 <div className="text-center py-12">
