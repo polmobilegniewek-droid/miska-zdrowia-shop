@@ -28,7 +28,7 @@ serve(async (req) => {
     // Normalize URL - remove trailing slash
     const baseUrl = apiUrl.replace(/\/+$/, '');
     
-    // Create Basic Auth header
+    // Create Basic Auth header (clientId:clientSecret)
     const basicAuth = btoa(`${clientId}:${clientSecret}`);
     
     // Apilo token endpoint
@@ -36,18 +36,20 @@ serve(async (req) => {
     
     console.log(`[apilo-auth] Requesting token from: ${tokenUrl}`);
 
-    // Use form-urlencoded with proper Accept header
+    // Apilo expects JSON body with camelCase keys:
+    // grantType: "authorization_code"
+    // token: "{authorization_code}"
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: authCode,
-      }).toString(),
+      body: JSON.stringify({
+        grantType: 'authorization_code',
+        token: authCode,
+      }),
     });
 
     const responseText = await response.text();
@@ -69,7 +71,7 @@ serve(async (req) => {
         data 
       }),
       { 
-        status: 200, // Always return 200 so frontend can see the response
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
