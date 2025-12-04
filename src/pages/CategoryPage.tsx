@@ -9,6 +9,7 @@ import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/integrations/supabase/client";
 import placeholderImage from "/placeholder.svg";
 
 interface Product {
@@ -107,25 +108,27 @@ const CategoryPage = () => {
         setIsLoading(true);
         setError(null);
         
-        // Pobieramy produkty z API
-        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
+        // Pobieramy produkty z Apilo przez edge function
+        const { data, error: invokeError } = await supabase.functions.invoke('apilo-proxy', {
+          body: {},
+        });
         
-        if (!response.ok) {
-          throw new Error('Nie udało się pobrać produktów');
+        if (invokeError) {
+          throw new Error(invokeError.message || 'Nie udało się pobrać produktów');
         }
         
-        const data = await response.json();
-        
-        console.log(`[API] Pobrano ${data.length} produktów z API dla kategorii: ${kategoria}`);
+        const products = data?.products || [];
+        console.log(`[API] Pobrano ${products.length} produktów z Apilo dla kategorii: ${kategoria}`);
         
         // Filtrujemy produkty po stronie klienta dla dokładniejszego dopasowania
         const filteredProducts = kategoria 
-          ? data.filter((product: Product) => productMatchesCategory(product, kategoria))
-          : data;
+          ? products.filter((product: Product) => productMatchesCategory(product, kategoria))
+          : products;
         
         console.log(`[API] Po filtracji pozostało ${filteredProducts.length} produktów`);
         setProducts(filteredProducts);
       } catch (err) {
+        console.error('[CategoryPage] Error:', err);
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
       } finally {
         setIsLoading(false);
