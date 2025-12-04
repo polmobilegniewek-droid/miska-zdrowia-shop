@@ -33,16 +33,18 @@ serve(async (req) => {
     
     console.log(`[apilo-auth] Requesting token from: ${tokenUrl}`);
 
+    // Try with JSON body first (Apilo may prefer this)
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
         grant_type: 'authorization_code',
         code: authCode,
-      }).toString(),
+      }),
     });
 
     const responseText = await response.text();
