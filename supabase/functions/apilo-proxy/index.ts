@@ -76,7 +76,8 @@ serve(async (req) => {
     }
 
     // Build Apilo API URL - correct endpoint: /rest/api/warehouse/product/
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}`;
+    // status=1 means active products only
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}&status=1`;
     
     // If SKU is provided, add filter
     if (sku) {
