@@ -25,44 +25,36 @@ serve(async (req) => {
       );
     }
 
+    // Normalize URL - remove trailing slash
+    const baseUrl = apiUrl.replace(/\/+$/, '');
+    
     // Create Basic Auth header
     const basicAuth = btoa(`${clientId}:${clientSecret}`);
     
     // Apilo token endpoint
-    const tokenUrl = `${apiUrl}/rest/auth/token/`;
+    const tokenUrl = `${baseUrl}/rest/auth/token/`;
     
     console.log(`[apilo-auth] Requesting token from: ${tokenUrl}`);
 
-    // Try with JSON body first (Apilo may prefer this)
+    // Use form-urlencoded with proper Accept header
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         grant_type: 'authorization_code',
         code: authCode,
-      }),
+      }).toString(),
     });
 
     const responseText = await response.text();
     console.log(`[apilo-auth] Response status: ${response.status}`);
     console.log(`[apilo-auth] Response body: ${responseText}`);
 
-    if (!response.ok) {
-      return new Response(
-        JSON.stringify({ 
-          error: `Apilo API error: ${response.status}`, 
-          details: responseText,
-          status: response.status 
-        }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Try to parse as JSON
+    // Return raw response regardless of status for debugging
     let data;
     try {
       data = JSON.parse(responseText);
@@ -70,11 +62,16 @@ serve(async (req) => {
       data = { raw: responseText };
     }
 
-    console.log('[apilo-auth] Token generated successfully');
-
     return new Response(
-      JSON.stringify({ success: true, data }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        success: response.ok, 
+        status: response.status,
+        data 
+      }),
+      { 
+        status: 200, // Always return 200 so frontend can see the response
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
 
   } catch (error) {
