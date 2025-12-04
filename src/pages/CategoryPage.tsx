@@ -10,7 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
-import placeholderImage from "/placeholder.svg";
+const placeholderImage = "/placeholder.svg";
 
 interface Product {
   sku: string;
