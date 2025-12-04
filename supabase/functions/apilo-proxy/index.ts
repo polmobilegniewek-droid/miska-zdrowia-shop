@@ -75,12 +75,12 @@ serve(async (req) => {
       }
     }
 
-    // Build Apilo API URL
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/products/?limit=${limit}&page=${page}`;
+    // Build Apilo API URL - correct endpoint: /rest/api/warehouse/product/
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}`;
     
     // If SKU is provided, add filter
     if (sku) {
-      apiloEndpoint += `&filter[sku]=${encodeURIComponent(sku)}`;
+      apiloEndpoint += `&sku=${encodeURIComponent(sku)}`;
     }
 
     console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
