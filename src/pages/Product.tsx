@@ -41,16 +41,16 @@ const Product = () => {
         
         // Pobieramy produkt z Apilo przez edge function, filtrując po SKU
         const { data, error: invokeError } = await supabase.functions.invoke('apilo-proxy', {
-          body: {},
+          body: { sku },
         });
         
         if (invokeError) {
           throw new Error(invokeError.message || "Nie udało się pobrać danych produktu");
         }
 
-        // Znajdź produkt po SKU
+        // Weź pierwszy produkt z listy (powinien być jeden po filtrowaniu po SKU)
         const products = data?.products || [];
-        const foundProduct = products.find((p: Product) => p.sku === sku);
+        const foundProduct = products.length > 0 ? products[0] : null;
         
         if (!foundProduct) {
           setError("Produkt nie został znaleziony");

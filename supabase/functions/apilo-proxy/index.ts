@@ -6,6 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// HARDCODED CREDENTIALS - replace with your actual values
+const APILO_API_URL = "https://miskazdrowia.apilo.com";
+const APILO_ACCESS_TOKEN = "WKLEJ_TUTAJ_SWOJ_ACCESS_TOKEN";
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -13,22 +17,22 @@ serve(async (req) => {
   }
 
   try {
-    const APILO_API_URL = Deno.env.get('APILO_API_URL');
-    const APILO_ACCESS_TOKEN = Deno.env.get('APILO_ACCESS_TOKEN');
+    // Parse request body (POST method)
+    let limit = 100;
+    let page = 1;
+    let sku: string | null = null;
 
-    if (!APILO_API_URL || !APILO_ACCESS_TOKEN) {
-      console.error('Missing APILO_API_URL or APILO_ACCESS_TOKEN');
-      return new Response(
-        JSON.stringify({ error: 'Missing API configuration' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        limit = body.limit || 100;
+        page = body.page || 1;
+        sku = body.sku || null;
+        console.log(`[apilo-proxy] Received body:`, JSON.stringify(body));
+      } catch (e) {
+        console.log(`[apilo-proxy] No JSON body or parse error`);
+      }
     }
-
-    // Parse request body or URL params
-    const url = new URL(req.url);
-    const limit = url.searchParams.get('limit') || '100';
-    const page = url.searchParams.get('page') || '1';
-    const sku = url.searchParams.get('sku');
 
     // Build Apilo API URL
     let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&page=${page}`;
@@ -59,6 +63,7 @@ serve(async (req) => {
 
     const data = await response.json();
     console.log(`[apilo-proxy] Received ${data.products?.length || 0} products from Apilo`);
+    console.log(`[apilo-proxy] Raw response keys:`, Object.keys(data));
 
     // Map Apilo products to our format
     const mappedProducts = (data.products || []).map((product: any) => ({
