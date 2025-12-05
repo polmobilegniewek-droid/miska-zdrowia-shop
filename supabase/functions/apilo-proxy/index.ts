@@ -75,12 +75,13 @@ serve(async (req) => {
       }
     }
 
-    // Build Apilo API URL - standard products endpoint
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&offset=${(page - 1) * limit}`;
+    // Build Apilo API URL - correct endpoint: /rest/api/warehouse/product/ (with trailing slash!)
+    // Query params: id, sku, name, ean, status (0=inactive, 1=active, 8=archive), offset, limit
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}`;
     
-    // If SKU is provided, add filter with array notation
+    // If SKU is provided, add filter
     if (sku) {
-      apiloEndpoint += `&filter[sku]=${encodeURIComponent(sku)}`;
+      apiloEndpoint += `&sku=${encodeURIComponent(sku)}`;
     }
 
     console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
@@ -126,14 +127,18 @@ serve(async (req) => {
     console.log(`[apilo-proxy] Raw response keys:`, Object.keys(data));
 
     // Map Apilo products to our format
+    // API returns: name, unit, weight, priceWithoutTax, sku, ean, id, originalCode, quantity, priceWithTax, tax, status
     const mappedProducts = (data.products || []).map((product: any) => ({
-      sku: product.id?.toString() || product.sku || '',
-      nazwa: product.name || product.title || '',
+      sku: product.sku || product.id?.toString() || '',
+      nazwa: product.name || '',
       opis: product.description || null,
-      cena_netto: product.price?.toString() || product.priceNet?.toString() || '0',
-      stan_magazynowy: product.stock?.toString() || product.quantity?.toString() || '0',
+      cena_netto: product.priceWithoutTax?.toString() || '0',
+      cena_brutto: product.priceWithTax?.toString() || '0',
+      stan_magazynowy: product.quantity?.toString() || '0',
       url_zdjecia: product.images?.[0]?.url || product.mainImage || product.image || null,
       kategorie_xml: product.categories?.map((c: any) => c.name || c).join(' || ') || '',
+      ean: product.ean || '',
+      vat: product.tax || '23',
     }));
 
     return new Response(
