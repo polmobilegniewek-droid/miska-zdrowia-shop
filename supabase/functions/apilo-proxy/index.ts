@@ -138,9 +138,12 @@ serve(async (req) => {
         if (response.ok) {
           data = await response.json();
           usedEndpoint = fullUrl;
-          console.log(`[apilo-proxy] SUCCESS with endpoint: ${fullUrl}`);
-          console.log(`[apilo-proxy] Response keys:`, Object.keys(data));
-          console.log(`[apilo-proxy] Full response:`, JSON.stringify(data).substring(0, 2000));
+          console.log(`[apilo-proxy] SUCCESS! Status 200 from: ${fullUrl}`);
+          console.log(`[apilo-proxy] Response keys:`, Object.keys(data || {}));
+          console.log(`[apilo-proxy] Raw response (first 3000 chars):`, JSON.stringify(data).substring(0, 3000));
+          
+          // IMPORTANT: Break immediately on ANY 200 response, even if empty
+          // This allows debugging the JSON structure
           break;
         } else if (response.status === 404) {
           console.log(`[apilo-proxy] 404 for: ${fullUrl}`);
@@ -152,7 +155,11 @@ serve(async (req) => {
         }
       }
 
-      if (data) break; // Found working endpoint
+      // Break outer loop immediately if we got ANY successful response
+      if (data !== null) {
+        console.log(`[apilo-proxy] Found working endpoint, stopping search`);
+        break;
+      }
     }
 
     // If no endpoint worked, return error with all checked endpoints
