@@ -124,7 +124,8 @@ serve(async (req) => {
 
     const data = await response.json();
     console.log(`[apilo-proxy] Received ${data.products?.length || 0} products from Apilo`);
-    console.log(`[apilo-proxy] Raw response keys:`, Object.keys(data));
+    console.log(`[apilo-proxy] totalCount:`, data.totalCount);
+    console.log(`[apilo-proxy] Full raw response:`, JSON.stringify(data).substring(0, 2000));
 
     // Map Apilo products to our format
     // API returns: name, unit, weight, priceWithoutTax, sku, ean, id, originalCode, quantity, priceWithTax, tax, status
