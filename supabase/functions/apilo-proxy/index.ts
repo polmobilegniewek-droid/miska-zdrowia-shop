@@ -75,13 +75,12 @@ serve(async (req) => {
       }
     }
 
-    // Build Apilo API URL - correct endpoint: /rest/api/warehouse/product/ (with trailing slash!)
-    // Query params: id, sku, name, ean, status (0=inactive, 1=active, 8=archive), offset, limit
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}`;
+    // Build Apilo API URL - correct endpoint: /rest/api/products
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&page=${page}`;
     
     // If SKU is provided, add filter
     if (sku) {
-      apiloEndpoint += `&sku=${encodeURIComponent(sku)}`;
+      apiloEndpoint += `&sku=${sku}`;
     }
 
     // Also fetch categories to debug
