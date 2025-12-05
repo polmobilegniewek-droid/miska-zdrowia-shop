@@ -75,51 +75,38 @@ serve(async (req) => {
       }
     }
 
-    // Build Apilo API URL - correct endpoint: /rest/api/products
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&page=${page}`;
-    
-    // If SKU is provided, add filter
-    if (sku) {
-      apiloEndpoint += `&sku=${sku}`;
-    }
+    // Auto-discovery: try multiple endpoint candidates
+    const candidates = [
+      "/rest/api/products",
+      "/rest/api/warehouse/products",
+      "/rest/api/warehouse/product",
+      "/rest/api/product",
+      "/rest/api/warehouse/product/",  // with trailing slash
+      "/rest/api/products/",
+    ];
 
-    // Also fetch categories to debug
-    console.log(`[apilo-proxy] Testing categories endpoint...`);
-    const catResponse = await fetch(`${APILO_API_URL}/rest/api/warehouse/category/?limit=10`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${currentAccessToken}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-    if (catResponse.ok) {
-      const catData = await catResponse.json();
-      console.log(`[apilo-proxy] Categories found: ${catData.categories?.length || 0}, totalCount: ${catData.totalCount}`);
-      if (catData.categories?.length > 0) {
-        console.log(`[apilo-proxy] First category:`, JSON.stringify(catData.categories[0]));
-      }
-    } else {
-      console.log(`[apilo-proxy] Categories endpoint failed: ${catResponse.status}`);
-    }
+    let data: any = null;
+    let usedEndpoint: string | null = null;
+    let lastError: string = '';
+    const checkedEndpoints: string[] = [];
 
-    console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
+    for (const candidate of candidates) {
+      // Try both offset-based and page-based pagination
+      const urlVariants = [
+        `${APILO_API_URL}${candidate}?limit=${limit}&page=${page}`,
+        `${APILO_API_URL}${candidate}?limit=${limit}&offset=${(page - 1) * limit}`,
+      ];
 
-    let response = await fetch(apiloEndpoint, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${currentAccessToken}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
+      for (const apiloEndpoint of urlVariants) {
+        let fullUrl = apiloEndpoint;
+        if (sku) {
+          fullUrl += `&sku=${sku}`;
+        }
 
-    // If 401, try to refresh token and retry
-    if (response.status === 401) {
-      console.log('[apilo-proxy] Token expired, refreshing...');
-      try {
-        await refreshAccessToken();
-        response = await fetch(apiloEndpoint, {
+        checkedEndpoints.push(fullUrl);
+        console.log(`[apilo-proxy] Trying: ${fullUrl}`);
+
+        let response = await fetch(fullUrl, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${currentAccessToken}`,
@@ -127,24 +114,61 @@ serve(async (req) => {
             'Accept': 'application/json',
           },
         });
-      } catch (refreshError) {
-        console.error('[apilo-proxy] Token refresh failed:', refreshError);
+
+        // If 401, try to refresh token and retry this same endpoint
+        if (response.status === 401) {
+          console.log('[apilo-proxy] Token expired, refreshing...');
+          try {
+            await refreshAccessToken();
+            response = await fetch(fullUrl, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${currentAccessToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+            });
+          } catch (refreshError) {
+            console.error('[apilo-proxy] Token refresh failed:', refreshError);
+            lastError = 'Token refresh failed';
+            continue;
+          }
+        }
+
+        if (response.ok) {
+          data = await response.json();
+          usedEndpoint = fullUrl;
+          console.log(`[apilo-proxy] SUCCESS with endpoint: ${fullUrl}`);
+          console.log(`[apilo-proxy] Response keys:`, Object.keys(data));
+          console.log(`[apilo-proxy] Full response:`, JSON.stringify(data).substring(0, 2000));
+          break;
+        } else if (response.status === 404) {
+          console.log(`[apilo-proxy] 404 for: ${fullUrl}`);
+          lastError = `404 Not Found`;
+        } else {
+          const errorText = await response.text();
+          console.log(`[apilo-proxy] ${response.status} for: ${fullUrl} - ${errorText}`);
+          lastError = `${response.status}: ${errorText}`;
+        }
       }
+
+      if (data) break; // Found working endpoint
     }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[apilo-proxy] Apilo API error: ${response.status} - ${errorText}`);
+    // If no endpoint worked, return error with all checked endpoints
+    if (!data) {
+      console.error(`[apilo-proxy] All endpoints failed. Checked: ${checkedEndpoints.join(', ')}`);
       return new Response(
-        JSON.stringify({ error: `Apilo API error: ${response.status}`, details: errorText }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: 'All API endpoints returned 404', 
+          checked_endpoints: checkedEndpoints,
+          last_error: lastError
+        }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const data = await response.json();
-    console.log(`[apilo-proxy] Received ${data.products?.length || 0} products from Apilo`);
-    console.log(`[apilo-proxy] totalCount:`, data.totalCount);
-    console.log(`[apilo-proxy] Full raw response:`, JSON.stringify(data).substring(0, 2000));
+    console.log(`[apilo-proxy] Using endpoint: ${usedEndpoint}`);
 
     // Map Apilo products to our format
     // API returns: name, unit, weight, priceWithoutTax, sku, ean, id, originalCode, quantity, priceWithTax, tax, status
@@ -165,6 +189,7 @@ serve(async (req) => {
       JSON.stringify({ 
         products: mappedProducts, 
         total: data.total || data.totalCount || mappedProducts.length,
+        debug_used_endpoint: usedEndpoint,
         debug_raw: data 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
