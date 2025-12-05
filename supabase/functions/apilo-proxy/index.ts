@@ -84,6 +84,26 @@ serve(async (req) => {
       apiloEndpoint += `&sku=${encodeURIComponent(sku)}`;
     }
 
+    // Also fetch categories to debug
+    console.log(`[apilo-proxy] Testing categories endpoint...`);
+    const catResponse = await fetch(`${APILO_API_URL}/rest/api/warehouse/category/?limit=10`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${currentAccessToken}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+    if (catResponse.ok) {
+      const catData = await catResponse.json();
+      console.log(`[apilo-proxy] Categories found: ${catData.categories?.length || 0}, totalCount: ${catData.totalCount}`);
+      if (catData.categories?.length > 0) {
+        console.log(`[apilo-proxy] First category:`, JSON.stringify(catData.categories[0]));
+      }
+    } else {
+      console.log(`[apilo-proxy] Categories endpoint failed: ${catResponse.status}`);
+    }
+
     console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
 
     let response = await fetch(apiloEndpoint, {
