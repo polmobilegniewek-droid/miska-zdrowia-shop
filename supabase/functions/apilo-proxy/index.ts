@@ -78,9 +78,9 @@ serve(async (req) => {
     // Build Apilo API URL - standard products endpoint
     let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&offset=${(page - 1) * limit}`;
     
-    // If SKU is provided, add filter
+    // If SKU is provided, add filter with array notation
     if (sku) {
-      apiloEndpoint += `&sku=${encodeURIComponent(sku)}`;
+      apiloEndpoint += `&filter[sku]=${encodeURIComponent(sku)}`;
     }
 
     console.log(`[apilo-proxy] Fetching from: ${apiloEndpoint}`);
