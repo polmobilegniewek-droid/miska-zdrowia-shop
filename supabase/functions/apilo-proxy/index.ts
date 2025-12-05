@@ -75,9 +75,8 @@ serve(async (req) => {
       }
     }
 
-    // Build Apilo API URL - correct endpoint: /rest/api/warehouse/product/
-    // status=1 means active products only
-    let apiloEndpoint = `${APILO_API_URL}/rest/api/warehouse/product/?limit=${limit}&offset=${(page - 1) * limit}&status=1`;
+    // Build Apilo API URL - standard products endpoint
+    let apiloEndpoint = `${APILO_API_URL}/rest/api/products?limit=${limit}&offset=${(page - 1) * limit}`;
     
     // If SKU is provided, add filter
     if (sku) {
@@ -138,7 +137,11 @@ serve(async (req) => {
     }));
 
     return new Response(
-      JSON.stringify({ products: mappedProducts, total: data.total || mappedProducts.length }),
+      JSON.stringify({ 
+        products: mappedProducts, 
+        total: data.total || data.totalCount || mappedProducts.length,
+        debug_raw: data 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
