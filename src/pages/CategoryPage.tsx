@@ -15,9 +15,10 @@ interface Product {
   sku: string;
   nazwa: string;
   opis: string | null;
-  cena_netto: string;
+  cena_sprzedazy_brutto: number | string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
+  producent: string;
 }
 
 const CategoryPage = () => {
@@ -172,14 +173,17 @@ const CategoryPage = () => {
                           />
                         </div>
                         <CardContent className="p-4 space-y-2">
+                          {product.producent && (
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide">{product.producent}</p>
+                          )}
                           <h2 className="font-semibold font-heading text-foreground line-clamp-2 min-h-[2.5rem]">
                             {product.nazwa}
                           </h2>
                           {product.opis && (
-                            <p className="text-sm text-muted-foreground line-clamp-2">{product.opis}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-2" dangerouslySetInnerHTML={{ __html: product.opis }} />
                           )}
                           <div className="flex items-center space-x-2">
-                            <span className="text-xl font-bold text-foreground">{product.cena_netto} zł (netto)</span>
+                            <span className="text-xl font-bold text-foreground">{parseFloat(String(product.cena_sprzedazy_brutto)).toFixed(2)} zł</span>
                           </div>
                           <p className="text-sm text-muted-foreground">Na stanie: {product.stan_magazynowy} szt.</p>
                         </CardContent>
@@ -192,7 +196,7 @@ const CategoryPage = () => {
                             id: product.sku,
                             sku: product.sku,
                             name: product.nazwa,
-                            price: parseFloat(product.cena_netto),
+                            price: parseFloat(String(product.cena_sprzedazy_brutto)),
                             image: product.url_zdjecia || placeholderImage,
                           })}
                         >
