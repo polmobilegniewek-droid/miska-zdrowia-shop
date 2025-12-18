@@ -5,12 +5,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
+import { Star } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { supabase } from "@/integrations/supabase/client";
-
-const placeholderImage = "/placeholder.svg";
+import placeholderImage from "/placeholder.svg";
 
 interface Product {
   sku: string;
@@ -19,7 +18,6 @@ interface Product {
   cena_netto: string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
-  kategorie_xml?: string;
 }
 
 const CategoryPage = () => {
@@ -30,82 +28,22 @@ const CategoryPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart();
 
-  const normalizeCategory = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/ł/g, 'l')
-      .replace(/ó/g, 'o')
-      .replace(/ą/g, 'a')
-      .replace(/ę/g, 'e')
-      .replace(/ś/g, 's')
-      .replace(/ć/g, 'c')
-      .replace(/ź/g, 'z')
-      .replace(/ż/g, 'z')
-      .replace(/ń/g, 'n')
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  };
-
-  const productMatchesCategory = (product: Product, categoryPath: string): boolean => {
-    if (!product.kategorie_xml || !categoryPath) {
-      return false;
-    }
-    
-    const urlSegments = categoryPath.split('/').filter(Boolean);
-    const xmlCategories = product.kategorie_xml.split(' || ');
-    
-    for (const xmlCategory of xmlCategories) {
-      const xmlSegments = xmlCategory.split(' / ').map(s => s.trim());
-      const normalizedXmlSegments = xmlSegments.map(normalizeCategory);
-      
-      if (urlSegments.length > normalizedXmlSegments.length) {
-        continue;
-      }
-      
-      let matches = true;
-      for (let i = 0; i < urlSegments.length; i++) {
-        const normalizedUrlSegment = normalizeCategory(urlSegments[i]);
-        if (normalizedXmlSegments[i] !== normalizedUrlSegment) {
-          matches = false;
-          break;
-        }
-      }
-      
-      if (matches) {
-        return true;
-      }
-    }
-    
-    return false;
-  };
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
-        const { data, error: invokeError } = await supabase.functions.invoke('apilo-proxy', {
-          body: {},
-        });
+        // Dodajemy parametr `kategoria` do URL
+        const response = await fetch(`https://serwer2583155.home.pl/getProdukty.php?kategoria=${encodeURIComponent(kategoria || '')}`);
         
-        if (invokeError) {
-          throw new Error(invokeError.message || 'Nie udało się pobrać produktów');
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać produktów');
         }
         
-        const allProducts = data?.products || [];
-        
-        const filteredProducts = kategoria 
-          ? allProducts.filter((product: Product) => productMatchesCategory(product, kategoria))
-          : allProducts;
-        
-        setProducts(filteredProducts);
+        const data = await response.json();
+        setProducts(data);
       } catch (err) {
-        console.error('[CategoryPage] Error:', err);
         setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania produktów');
       } finally {
         setIsLoading(false);
@@ -113,6 +51,7 @@ const CategoryPage = () => {
     };
 
     fetchProducts();
+    // Dodajemy kategoria do tablicy zależności
   }, [kategoria]);
 
   return (
@@ -120,6 +59,7 @@ const CategoryPage = () => {
       <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 md:px-6">
+          {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-2">
               {kategoria ? kategoria.replace(/-/g, ' ') : 'Produkty'}
@@ -127,13 +67,16 @@ const CategoryPage = () => {
             <p className="text-muted-foreground">Znaleziono {products.length} produktów</p>
           </div>
 
+          {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Filters Sidebar */}
             <aside className="lg:col-span-1">
               <div className="sticky top-20 space-y-6">
                 <div className="bg-card rounded-lg border p-6">
                   <h2 className="text-lg font-semibold font-heading text-foreground mb-4">Filtry</h2>
                   
                   <Accordion type="multiple" defaultValue={["marka", "cena", "cechy"]} className="w-full">
+                    {/* Marka Filter */}
                     <AccordionItem value="marka">
                       <AccordionTrigger className="text-sm font-medium">Marka</AccordionTrigger>
                       <AccordionContent>
@@ -141,7 +84,10 @@ const CategoryPage = () => {
                           {["PetNature", "HealthyPet", "VetDiet", "NaturalChoice"].map((brand) => (
                             <div key={brand} className="flex items-center space-x-2">
                               <Checkbox id={brand} />
-                              <label htmlFor={brand} className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                              <label
+                                htmlFor={brand}
+                                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                              >
                                 {brand}
                               </label>
                             </div>
@@ -150,11 +96,19 @@ const CategoryPage = () => {
                       </AccordionContent>
                     </AccordionItem>
 
+                    {/* Cena Filter */}
                     <AccordionItem value="cena">
                       <AccordionTrigger className="text-sm font-medium">Cena</AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4 pt-2">
-                          <Slider min={0} max={500} step={10} value={priceRange} onValueChange={setPriceRange} className="w-full" />
+                          <Slider
+                            min={0}
+                            max={500}
+                            step={10}
+                            value={priceRange}
+                            onValueChange={setPriceRange}
+                            className="w-full"
+                          />
                           <div className="flex items-center justify-between text-sm text-muted-foreground">
                             <span>{priceRange[0]} zł</span>
                             <span>{priceRange[1]} zł</span>
@@ -163,6 +117,7 @@ const CategoryPage = () => {
                       </AccordionContent>
                     </AccordionItem>
 
+                    {/* Cechy Filter */}
                     <AccordionItem value="cechy">
                       <AccordionTrigger className="text-sm font-medium">Cechy</AccordionTrigger>
                       <AccordionContent>
@@ -170,7 +125,10 @@ const CategoryPage = () => {
                           {["Bezzbożowa", "Hipoalergiczna", "Dla seniora", "Naturalna", "Bio"].map((feature) => (
                             <div key={feature} className="flex items-center space-x-2">
                               <Checkbox id={feature} />
-                              <label htmlFor={feature} className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                              <label
+                                htmlFor={feature}
+                                className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                              >
                                 {feature}
                               </label>
                             </div>
@@ -187,6 +145,7 @@ const CategoryPage = () => {
               </div>
             </aside>
 
+            {/* Products Grid */}
             <div className="lg:col-span-3">
               {isLoading && (
                 <div className="text-center py-12">

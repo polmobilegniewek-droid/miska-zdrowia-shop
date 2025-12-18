@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 const About = lazy(() => import("./pages/About"));
 const Product = lazy(() => import("./pages/Product"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
-const SetupApilo = lazy(() => import("./pages/SetupApilo"));
 
 const queryClient = new QueryClient();
 
@@ -28,7 +27,6 @@ const App = () => (
               <Route path="/o-nas" element={<About />} />
               <Route path="/produkt/:id" element={<Product />} />
               <Route path="/kategoria/*" element={<CategoryPage />} />
-              <Route path="/setup-apilo" element={<SetupApilo />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

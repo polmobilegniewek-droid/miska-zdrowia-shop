@@ -6,8 +6,7 @@ import { Star, ShoppingCart, Heart, Shield, Package, Leaf } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
-import { supabase } from "@/integrations/supabase/client";
-const placeholderImage = "/placeholder.svg";
+import placeholderImage from "/placeholder.svg";
 
 interface Product {
   sku: string;
@@ -38,27 +37,15 @@ const Product = () => {
       try {
         setIsLoading(true);
         setError(null);
+        const response = await fetch(`https://serwer2583155.home.pl/getProductDetails.php?sku=${sku}`);
         
-        // Pobieramy produkt z Apilo przez edge function, filtrując po SKU
-        const { data, error: invokeError } = await supabase.functions.invoke('apilo-proxy', {
-          body: { sku },
-        });
-        
-        if (invokeError) {
-          throw new Error(invokeError.message || "Nie udało się pobrać danych produktu");
+        if (!response.ok) {
+          throw new Error("Nie udało się pobrać danych produktu");
         }
 
-        // Weź pierwszy produkt z listy (powinien być jeden po filtrowaniu po SKU)
-        const products = data?.products || [];
-        const foundProduct = products.length > 0 ? products[0] : null;
-        
-        if (!foundProduct) {
-          setError("Produkt nie został znaleziony");
-        } else {
-          setProduct(foundProduct);
-        }
+        const data = await response.json();
+        setProduct(data);
       } catch (err) {
-        console.error('[Product] Error:', err);
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas pobierania produktu");
       } finally {
         setIsLoading(false);

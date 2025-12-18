@@ -1,7 +1,1 @@
 project_id = "mtutsynracpxihfcuehd"
-
-[functions.apilo-proxy]
-verify_jwt = false
-
-[functions.apilo-auth]
-verify_jwt = false
