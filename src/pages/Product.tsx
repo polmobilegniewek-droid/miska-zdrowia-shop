@@ -12,9 +12,10 @@ interface Product {
   sku: string;
   nazwa: string;
   opis: string | null;
-  cena_netto: string;
+  cena_sprzedazy_brutto: number | string;
   stan_magazynowy: string;
   url_zdjecia: string | null;
+  producent: string;
 }
 
 const Product = () => {
@@ -132,6 +133,9 @@ const Product = () => {
             {/* Product Info */}
             <div className="space-y-6">
               <div>
+                {product.producent && (
+                  <p className="text-sm text-primary font-medium uppercase tracking-wide mb-1">{product.producent}</p>
+                )}
                 <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">SKU: {product.sku}</p>
                 <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-3">
                   {product.nazwa}
@@ -156,8 +160,7 @@ const Product = () => {
               {/* Price */}
               <div className="bg-secondary/30 p-6 rounded-xl">
                 <div className="flex items-baseline space-x-2 mb-4">
-                  <span className="text-3xl font-bold text-foreground">{parseFloat(product.cena_netto).toFixed(2)} zł</span>
-                  <span className="text-sm text-muted-foreground">(netto)</span>
+                  <span className="text-3xl font-bold text-foreground">{parseFloat(String(product.cena_sprzedazy_brutto)).toFixed(2)} zł</span>
                 </div>
                 <div className="text-sm text-muted-foreground mb-4">
                   Na stanie: {product.stan_magazynowy} szt.
@@ -213,7 +216,7 @@ const Product = () => {
                       id: `${product.sku}-${selectedWeight}`,
                       sku: product.sku,
                       name: product.nazwa,
-                      price: parseFloat(product.cena_netto),
+                      price: parseFloat(String(product.cena_sprzedazy_brutto)),
                       image: product.url_zdjecia || placeholderImage,
                       weight: selectedWeight,
                       quantity: quantity,
